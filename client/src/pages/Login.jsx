@@ -84,7 +84,7 @@ function ForgotPassword({ open, handleClose }) {
   );
 }
 
-export default function Login() {
+export default function Login({ setUser }) {
   const [emailError, setEmailError] = useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = useState("");
   const [passwordError, setPasswordError] = useState(false);
@@ -111,18 +111,23 @@ export default function Login() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/login", // Assuming server runs on 5000
+        "http://localhost:5000/api/auth/login",
         { email, password },
         { withCredentials: true }
       );
       
       console.log("Login successful:", response.data);
-      // Redirect to home or dashboard after successful login
-      navigate("/");
+      if (setUser) setUser(response.data);
+      
+      // Redirect based on profile completion status
+      if (response.data.isProfileComplete) {
+        navigate("/dashboard");
+      } else {
+        navigate("/profile");
+      }
     } catch (error) {
       console.error("Login failed:", error);
       const errorMsg = error.response?.data?.message || "Login failed. Please try again.";
-      // Set a generic error on the password field for simplicity
       setPasswordError(true);
       setPasswordErrorMessage(errorMsg);
     }

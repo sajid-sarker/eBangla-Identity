@@ -51,7 +51,7 @@ const SignUpContainer = styled(Stack)(({ theme }) => ({
   },
 }));
 
-export default function Register() {
+export default function Register({ setUser }) {
   const [emailError, setEmailError] = React.useState(false);
   const [emailErrorMessage, setEmailErrorMessage] = React.useState("");
   const [passwordError, setPasswordError] = React.useState(false);
@@ -114,8 +114,9 @@ export default function Register() {
       );
       
       console.log("Registration successful:", response.data);
-      // Redirect to home or dashboard after successful registration
-      navigate("/");
+      if (setUser) setUser(response.data);
+      // Redirect to profile after successful registration to complete info
+      navigate("/profile");
     } catch (error) {
       console.error("Registration failed:", error);
       const errorMsg = error.response?.data?.message || "Registration failed. Please try again.";

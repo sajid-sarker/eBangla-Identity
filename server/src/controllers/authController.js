@@ -56,6 +56,13 @@ export const register = async (req, res) => {
         _id: citizen._id,
         name: citizen.name,
         email: citizen.email,
+        nid: citizen.nid,
+        dateOfBirth: citizen.dateOfBirth,
+        gender: citizen.gender,
+        phone: citizen.phone,
+        address: citizen.address,
+        maritalStatus: citizen.maritalStatus,
+        isProfileComplete: citizen.isProfileComplete,
         message: "Registration successful",
       });
     } else {
@@ -88,6 +95,13 @@ export const login = async (req, res) => {
         _id: citizen._id,
         name: citizen.name,
         email: citizen.email,
+        nid: citizen.nid,
+        dateOfBirth: citizen.dateOfBirth,
+        gender: citizen.gender,
+        phone: citizen.phone,
+        address: citizen.address,
+        maritalStatus: citizen.maritalStatus,
+        isProfileComplete: citizen.isProfileComplete,
         message: "Login successful",
       });
     } else {
@@ -110,17 +124,83 @@ export const logout = (req, res) => {
   res.status(200).json({ message: "Logged out successfully" });
 };
 
+// @desc    Update user profile
+// @route   PUT /api/auth/profile
+// @access  Private
+export const updateProfile = async (req, res) => {
+  try {
+    const citizen = await Citizen.findById(req.user._id);
+
+    if (citizen) {
+      citizen.name = req.body.name || citizen.name;
+      citizen.nid = req.body.nid || citizen.nid;
+      citizen.dateOfBirth = req.body.dateOfBirth || citizen.dateOfBirth;
+      citizen.gender = req.body.gender || citizen.gender;
+      citizen.phone = req.body.phone || citizen.phone;
+      citizen.maritalStatus = req.body.maritalStatus || citizen.maritalStatus;
+      citizen.passport = req.body.passport || citizen.passport;
+      citizen.driving_license = req.body.driving_license || citizen.driving_license;
+      
+      if (req.body.address) {
+        citizen.address = {
+          division: req.body.address.division || citizen.address?.division,
+          district: req.body.address.district || citizen.address?.district,
+          upazilla: req.body.address.upazilla || citizen.address?.upazilla,
+          village: req.body.address.village || citizen.address?.village,
+        };
+      }
+
+      if (req.body.password) {
+        const salt = await bcrypt.genSalt(10);
+        citizen.password = await bcrypt.hash(req.body.password, salt);
+      }
+
+      const updatedCitizen = await citizen.save();
+
+      res.status(200).json({
+        _id: updatedCitizen._id,
+        name: updatedCitizen.name,
+        email: updatedCitizen.email,
+        nid: updatedCitizen.nid,
+        dateOfBirth: updatedCitizen.dateOfBirth,
+        gender: updatedCitizen.gender,
+        phone: updatedCitizen.phone,
+        address: updatedCitizen.address,
+        maritalStatus: updatedCitizen.maritalStatus,
+        isProfileComplete: updatedCitizen.isProfileComplete,
+        message: "Profile updated successfully",
+      });
+    } else {
+      res.status(404).json({ message: "Citizen not found" });
+    }
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
+
 // @desc    Get user data
 // @route   GET /api/auth/me
 // @access  Private
 export const getMe = async (req, res) => {
   try {
-    const citizen = {
-      _id: req.user._id,
-      name: req.user.name,
-      email: req.user.email,
-    };
-    res.status(200).json(citizen);
+    const citizen = await Citizen.findById(req.user._id);
+    if (citizen) {
+      res.status(200).json({
+        _id: citizen._id,
+        name: citizen.name,
+        email: citizen.email,
+        nid: citizen.nid,
+        dateOfBirth: citizen.dateOfBirth,
+        gender: citizen.gender,
+        phone: citizen.phone,
+        address: citizen.address,
+        maritalStatus: citizen.maritalStatus,
+        isProfileComplete: citizen.isProfileComplete,
+      });
+    } else {
+      res.status(404).json({ message: "Citizen not found" });
+    }
   } catch (error) {
     res.status(500).json({ message: "Server Error" });
   }

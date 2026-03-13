@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -19,12 +20,16 @@ const pages = [
   { name: "Login", path: "/login" },
   { name: "Register", path: "/register" },
 ];
-const settings = ["Profile", "Logout"];
 
-export default function Navbar() {
-  const [auth, setAuth] = useState(true);
+const settings = [
+  { name: "Profile", path: "/profile" },
+  { name: "Logout", path: "/logout " },
+];
+
+export default function Navbar({ user, setUser }) {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
+  const navigate = useNavigate();
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -41,20 +46,35 @@ export default function Navbar() {
     setAnchorElUser(null);
   };
 
+  const handleLogout = async () => {
+    try {
+      await axios.post("http://localhost:5000/api/auth/logout");
+      if (setUser) setUser(null);
+      handleCloseUserMenu();
+      navigate("/login");
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
+
+  const filteredPages = pages.filter(page => {
+    if (user && (page.name === "Login" || page.name === "Register")) return false;
+    return true;
+  });
+
   return (
     <AppBar
-      position="static"
-      sx={{ backgroundColor: "#05339C" /* Change color here! */ }}
+      position="sticky"
+      sx={{ backgroundColor: "#05339C" }}
     >
       <Container maxWidth={false}>
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
-          {/* For the desktop version of navbar */}
           <Typography
             variant="h6"
             noWrap
-            component="a"
-            href="/"
+            component={Link}
+            to="/"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -81,39 +101,30 @@ export default function Navbar() {
             <Menu
               id="menu-appbar"
               anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
+              anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
               keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
+              transformOrigin={{ vertical: "top", horizontal: "left" }}
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: "block", md: "none" } }}
             >
-              {pages.map((page) => (
+              {filteredPages.map((page) => (
                 <MenuItem
                   key={page.name}
                   component={Link}
                   to={page.path}
                   onClick={handleCloseNavMenu}
                 >
-                  <Typography sx={{ textAlign: "center" }}>
-                    {page.name}
-                  </Typography>
+                  <Typography sx={{ textAlign: "center" }}>{page.name}</Typography>
                 </MenuItem>
               ))}
             </Menu>
           </Box>
           <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
-          {/* This is typography for the mobile navbar */}
           <Typography
             variant="h6"
-            component="a"
-            href="#"
+            component={Link}
+            to="/"
             sx={{
               mr: 2,
               display: { xs: "flex", md: "none" },
@@ -129,7 +140,7 @@ export default function Navbar() {
             eBangla Identity
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => (
+            {filteredPages.map((page) => (
               <Button
                 key={page.name}
                 component={Link}
@@ -141,39 +152,29 @@ export default function Navbar() {
               </Button>
             ))}
           </Box>
-          {auth && (
+          {user && (
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar
-                    alt="User Picture"
-                    src="/static/images/avatar/2.jpg"
-                  />
+                  <Avatar alt={user.name} src="/static/images/avatar/2.jpg" />
                 </IconButton>
               </Tooltip>
               <Menu
                 sx={{ mt: "45px" }}
                 id="menu-appbar"
                 anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
+                anchorOrigin={{ vertical: "top", horizontal: "right" }}
                 keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
+                transformOrigin={{ vertical: "top", horizontal: "right" }}
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography sx={{ textAlign: "center" }}>
-                      {setting}
-                    </Typography>
-                  </MenuItem>
-                ))}
+                <MenuItem component={Link} to="/profile" onClick={handleCloseUserMenu}>
+                  <Typography sx={{ textAlign: "center" }}>Profile</Typography>
+                </MenuItem>
+                <MenuItem onClick={handleLogout}>
+                  <Typography sx={{ textAlign: "center" }}>Logout</Typography>
+                </MenuItem>
               </Menu>
             </Box>
           )}

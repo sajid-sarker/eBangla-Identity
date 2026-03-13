@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -7,6 +7,31 @@ import Navbar from "./components/common/Navbar";
 import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Profile from "./pages/Profile";
+import { Navigate } from "react-router-dom";
+import axios from "axios";
+
+// Configure axios defaults
+axios.defaults.withCredentials = true;
+
+const ProtectedRoute = ({
+  children,
+  user,
+  loading,
+  requireCompleteProfile = true,
+}) => {
+  if (loading) return null; // Or a loading spinner
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (requireCompleteProfile && !user.isProfileComplete) {
+    return <Navigate to="/profile" replace />;
+  }
+
+  return children;
+};
 
 const theme = createTheme({
   palette: {
@@ -32,18 +57,57 @@ const theme = createTheme({
 });
 
 function App() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/auth/me");
+        setUser(res.data);
+      } catch (err) {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUser();
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <div className="app-container">
-        <Navbar />
+        <Navbar user={user} setUser={setUser} />
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login setUser={setUser} />} />
+          <Route path="/register" element={<Register setUser={setUser} />} />
+
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute
+                user={user}
+                loading={loading}
+                requireCompleteProfile={false}
+              >
+                <Profile user={user} setUser={setUser} />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute user={user} loading={loading}>
+                <div>Dashboard Placeholder</div>
+              </ProtectedRoute>
+            }
+          />
 
           {/* Fallback route */}
-          <Route path="*" element={<HomePage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
     </ThemeProvider>

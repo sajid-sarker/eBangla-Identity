@@ -1,3 +1,5 @@
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { alpha } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
@@ -12,6 +14,28 @@ import LocalPoliceIcon from "@mui/icons-material/LocalPolice";
 import FamilyRestroomIcon from "@mui/icons-material/FamilyRestroom";
 
 export default function Profile({ user, setUser }) {
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await axios.get("http://localhost:5000/api/stats/dashboard");
+        setStats(res.data);
+      } catch (err) {
+        console.error("Error fetching stats:", err);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  const formatDate = (date) => {
+    if (!date) return "N/A";
+    return new Date(date).toLocaleDateString(undefined, { 
+      month: 'short', 
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
   return (
     <>
       <CssBaseline enableColorScheme />
@@ -67,27 +91,27 @@ export default function Profile({ user, setUser }) {
               <Grid item xs={12} md={4}>
                 <RecordCard
                   title="Medical Records"
-                  value="12 Files"
+                  value={stats?.medical ? `${stats.medical.bloodGroup} | ${stats.medical.count} Records` : "..."}
                   icon={<MedicalServicesIcon />}
-                  lastUpdated="2 days ago"
+                  lastUpdated={formatDate(stats?.medical?.lastUpdated)}
                   color="error.main"
                 />
               </Grid>
               <Grid item xs={12} md={4}>
                 <RecordCard
                   title="Police Records"
-                  value="Clear"
+                  value={stats?.police ? stats.police.status : "..."}
                   icon={<LocalPoliceIcon />}
-                  lastUpdated="Jan 15, 2026"
+                  lastUpdated={formatDate(stats?.police?.lastUpdated)}
                   color="primary.main"
                 />
               </Grid>
               <Grid item xs={12} md={4}>
                 <RecordCard
                   title="Family Records"
-                  value="4 Members"
+                  value={stats?.family ? `${stats.family.count} Members` : "..."}
                   icon={<FamilyRestroomIcon />}
-                  lastUpdated="Feb 20, 2026"
+                  lastUpdated={formatDate(stats?.family?.lastUpdated)}
                   color="success.main"
                 />
               </Grid>

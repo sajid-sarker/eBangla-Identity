@@ -8,6 +8,8 @@ import HomePage from "./pages/HomePage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
+import MedicalRecords from "./pages/MedicalRecords";
+import PoliceRecords from "./pages/PoliceRecords";
 import { Navigate } from "react-router-dom";
 import axios from "axios";
 
@@ -98,10 +100,28 @@ function App() {
           />
 
           <Route
+            path="/medical"
+            element={
+              <ProtectedRoute user={user} loading={loading}>
+                <MedicalRecords user={user} />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/police"
+            element={
+              <ProtectedRoute user={user} loading={loading}>
+                <PoliceRecords user={user} />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
             path="/dashboard"
             element={
               <ProtectedRoute user={user} loading={loading}>
-                <div>Dashboard Placeholder</div>
+                <Navigate to="/profile" replace />
               </ProtectedRoute>
             }
           />

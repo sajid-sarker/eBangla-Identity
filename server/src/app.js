@@ -5,7 +5,9 @@ import cookieParser from "cookie-parser";
 
 // Route imports
 import authRoutes from "./routes/authRoutes.js";
-// e.g import propertyRoutes from "./routes/propertyRoutes.js";
+import medicalRoutes from "./routes/medicalRoutes.js";
+import policeRoutes from "./routes/policeRoutes.js";
+import statsRoutes from "./routes/statsRoutes.js";
 
 const app = express();
 
@@ -17,7 +19,8 @@ app.use(cookieParser());
 
 //API Routes
 app.use("/api/auth", authRoutes);
-
-// e.g app.use("/api/users", userRoutes);
+app.use("/api/medical", medicalRoutes);
+app.use("/api/police", policeRoutes);
+app.use("/api/stats", statsRoutes);
 
 export default app;

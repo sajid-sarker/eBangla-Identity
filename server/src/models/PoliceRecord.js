@@ -36,7 +36,6 @@ const PoliceRecordSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Citizen",
       required: true,
-      index: true,
     },
 
     cases: [CaseSchema],

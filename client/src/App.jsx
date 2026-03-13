@@ -116,6 +116,14 @@ function App() {
               </ProtectedRoute>
             }
           />
+          {/* <Route
+            path="/tax"
+            element={
+              <ProtectedRoute user={user} loading={loading}>
+                <TaxRecords user={user} />
+              </ProtectedRoute>
+            }
+          /> */}
 
           <Route
             path="/dashboard"

@@ -43,7 +43,6 @@ const MedicalRecordSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Citizen",
       required: true,
-      index: true,
     },
 
     bloodGroup: {

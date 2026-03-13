@@ -1,4 +1,6 @@
 import React from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
@@ -57,6 +59,8 @@ export default function Register() {
   const [nameError, setNameError] = React.useState(false);
   const [nameErrorMessage, setNameErrorMessage] = React.useState("");
 
+  const navigate = useNavigate();
+
   const validateInputs = () => {
     const email = document.getElementById("email");
     const password = document.getElementById("password");
@@ -94,15 +98,31 @@ export default function Register() {
     return isValid;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (!validateInputs()) return;
     const data = new FormData(event.currentTarget);
-    console.log({
-      name: data.get("name"),
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    const name = data.get("name");
+    const email = data.get("email");
+    const password = data.get("password");
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/register",
+        { name, email, password },
+        { withCredentials: true }
+      );
+      
+      console.log("Registration successful:", response.data);
+      // Redirect to home or dashboard after successful registration
+      navigate("/");
+    } catch (error) {
+      console.error("Registration failed:", error);
+      const errorMsg = error.response?.data?.message || "Registration failed. Please try again.";
+      // Set a generic error on the email field for simplicity
+      setEmailError(true);
+      setEmailErrorMessage(errorMsg);
+    }
   };
 
   return (
@@ -204,30 +224,6 @@ export default function Register() {
               }}
             >
               Sign up
-            </Button>
-          </Box>
-
-          <Divider>
-            <Typography sx={{ color: "#4a5a80" }}>or</Typography>
-          </Divider>
-
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => alert("Sign up with Google")}
-              sx={{
-                borderColor: "#05339C",
-                color: "#05339C",
-                fontWeight: 600,
-                borderRadius: "8px",
-                "&:hover": {
-                  borderColor: "#03248a",
-                  backgroundColor: "rgba(5,51,156,0.05)",
-                },
-              }}
-            >
-              Sign up with Google
             </Button>
           </Box>
         </Card>

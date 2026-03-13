@@ -1,33 +1,22 @@
 import express from "express";
 import cors from "cors";
 import path from "path";
-import { deflate } from "zlib";
+import cookieParser from "cookie-parser";
 
 // Route imports
+import authRoutes from "./routes/authRoutes.js";
 // e.g import propertyRoutes from "./routes/propertyRoutes.js";
 
 const app = express();
 
 // CORS middleware
-app.use(cors());
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, PATCH, DELETE, OPTIONS",
-  );
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization",
-  );
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-  next();
-});
-
+app.use(cors({ origin: true, credentials: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 //API Routes
+app.use("/api/auth", authRoutes);
 
-// e.g app.use("/api/users", authRoutes);
+// e.g app.use("/api/users", userRoutes);
 
 export default app;

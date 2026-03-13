@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
@@ -89,6 +91,8 @@ export default function Login() {
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
   const [open, setOpen] = useState(false);
 
+  const navigate = useNavigate();
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -97,16 +101,31 @@ export default function Login() {
     setOpen(false);
   };
 
-  const handleSubmit = (event) => {
-    if (emailError || passwordError) {
-      event.preventDefault();
-      return;
-    }
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!validateInputs()) return;
+    
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    const email = data.get("email");
+    const password = data.get("password");
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/login", // Assuming server runs on 5000
+        { email, password },
+        { withCredentials: true }
+      );
+      
+      console.log("Login successful:", response.data);
+      // Redirect to home or dashboard after successful login
+      navigate("/");
+    } catch (error) {
+      console.error("Login failed:", error);
+      const errorMsg = error.response?.data?.message || "Login failed. Please try again.";
+      // Set a generic error on the password field for simplicity
+      setPasswordError(true);
+      setPasswordErrorMessage(errorMsg);
+    }
   };
 
   const validateInputs = () => {

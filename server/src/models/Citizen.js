@@ -69,6 +69,11 @@ const citizenSchema = new mongoose.Schema(
       required: false,
       default: null,
     },
+    yearlyIncome: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
     familyMembers: [familyMemberSchema],
   },
   {
@@ -85,6 +90,7 @@ citizenSchema.virtual("isProfileComplete").get(function () {
     this.gender &&
     this.phone &&
     this.maritalStatus &&
+    this.yearlyIncome !== undefined &&
     this.address &&
     this.address.division &&
     this.address.district &&

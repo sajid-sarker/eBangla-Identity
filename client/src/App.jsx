@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
+import axios from "axios";
 
 import Navbar from "./components/common/Navbar";
 import HomePage from "./pages/HomePage";
@@ -10,8 +11,7 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import MedicalRecords from "./pages/MedicalRecords";
 import PoliceRecords from "./pages/PoliceRecords";
-import { Navigate } from "react-router-dom";
-import axios from "axios";
+import TaxRecords from "./pages/TaxRecords";
 
 // Configure axios defaults
 axios.defaults.withCredentials = true;
@@ -116,14 +116,14 @@ function App() {
               </ProtectedRoute>
             }
           />
-          {/* <Route
+          <Route
             path="/tax"
             element={
               <ProtectedRoute user={user} loading={loading}>
                 <TaxRecords user={user} />
               </ProtectedRoute>
             }
-          /> */}
+          />
 
           <Route
             path="/dashboard"

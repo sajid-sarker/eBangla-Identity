@@ -4,9 +4,13 @@ import jwt from "jsonwebtoken";
 
 // Helper feature to generate token and set cookie
 const generateTokenAndSetCookie = (res, citizenId) => {
-  const token = jwt.sign({ id: citizenId }, process.env.JWT_SECRET || "fallback_secret", {
-    expiresIn: "30d",
-  });
+  const token = jwt.sign(
+    { id: citizenId },
+    process.env.JWT_SECRET || "fallback_secret",
+    {
+      expiresIn: "30d",
+    },
+  );
 
   // Set JWT as httpOnly cookie
   res.cookie("jwt", token, {
@@ -15,7 +19,7 @@ const generateTokenAndSetCookie = (res, citizenId) => {
     sameSite: "strict", // Prevent CSRF attacks
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
   });
-  
+
   return token;
 };
 
@@ -25,17 +29,21 @@ const generateTokenAndSetCookie = (res, citizenId) => {
 export const register = async (req, res) => {
   console.log("Registering user:", req.body.email);
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password } = req.body || {};
 
     if (!name || !email || !password) {
-      return res.status(400).json({ message: "Please provide name, email, and password" });
+      return res
+        .status(400)
+        .json({ message: "Please provide name, email, and password" });
     }
 
     // Check if citizen exists
     const citizenExists = await Citizen.findOne({ email });
 
     if (citizenExists) {
-      return res.status(400).json({ message: "Citizen already exists with that email" });
+      return res
+        .status(400)
+        .json({ message: "Citizen already exists with that email" });
     }
 
     // Hash password
@@ -51,7 +59,7 @@ export const register = async (req, res) => {
 
     if (citizen) {
       generateTokenAndSetCookie(res, citizen._id);
-      
+
       res.status(201).json({
         _id: citizen._id,
         name: citizen.name,
@@ -79,10 +87,12 @@ export const register = async (req, res) => {
 // @access  Public
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body || {};
 
     if (!email || !password) {
-      return res.status(400).json({ message: "Please provide email and password" });
+      return res
+        .status(400)
+        .json({ message: "Please provide email and password" });
     }
 
     // Check for user email
@@ -91,19 +101,7 @@ export const login = async (req, res) => {
     if (citizen && (await bcrypt.compare(password, citizen.password))) {
       generateTokenAndSetCookie(res, citizen._id);
 
-      res.status(200).json({
-        _id: citizen._id,
-        name: citizen.name,
-        email: citizen.email,
-        nid: citizen.nid,
-        dateOfBirth: citizen.dateOfBirth,
-        gender: citizen.gender,
-        phone: citizen.phone,
-        address: citizen.address,
-        maritalStatus: citizen.maritalStatus,
-        isProfileComplete: citizen.isProfileComplete,
-        message: "Login successful",
-      });
+      res.status(200).json(citizen);
     } else {
       res.status(401).json({ message: "Invalid credentials" });
     }
@@ -139,8 +137,9 @@ export const updateProfile = async (req, res) => {
       citizen.phone = req.body.phone || citizen.phone;
       citizen.maritalStatus = req.body.maritalStatus || citizen.maritalStatus;
       citizen.passport = req.body.passport || citizen.passport;
-      citizen.driving_license = req.body.driving_license || citizen.driving_license;
-      
+      citizen.driving_license =
+        req.body.driving_license || citizen.driving_license;
+
       if (req.body.address) {
         citizen.address = {
           division: req.body.address.division || citizen.address?.division,
@@ -153,6 +152,22 @@ export const updateProfile = async (req, res) => {
       if (req.body.password) {
         const salt = await bcrypt.genSalt(10);
         citizen.password = await bcrypt.hash(req.body.password, salt);
+      }
+
+      if (req.body.yearlyIncome !== undefined) {
+        const income = Number(req.body.yearlyIncome);
+        citizen.yearlyIncome = income;
+
+        // SYNC CALCULATION: 0% up to 350,000 | 5% above
+        const freeLimit = 350000;
+        const tax = income > freeLimit ? (income - freeLimit) * 0.05 : 0;
+
+        // Update or create Tax Record for 2026 automatically
+        await TaxRecord.findOneAndUpdate(
+          { user: citizen._id, fiscalYear: "2026" },
+          { totalIncome: income, taxAmount: tax, status: "Paid" },
+          { upsert: true },
+        );
       }
 
       const updatedCitizen = await citizen.save();

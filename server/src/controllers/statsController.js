@@ -1,5 +1,6 @@
 import MedicalRecord from "../models/MedicalRecord.js";
 import PoliceRecord from "../models/PoliceRecord.js";
+import TaxRecord from "../models/TaxRecord.js";
 
 // @desc    Get dashboard statistics for the logged-in user
 // @route   GET /api/stats/dashboard
@@ -18,9 +19,9 @@ export const getDashboardStats = async (req, res) => {
 
     if (medicalRecord) {
       medicalStats = {
-        count: 
-          (medicalRecord.diagnoses?.length || 0) + 
-          (medicalRecord.allergies?.length || 0) + 
+        count:
+          (medicalRecord.diagnoses?.length || 0) +
+          (medicalRecord.allergies?.length || 0) +
           (medicalRecord.vaccinations?.length || 0),
         bloodGroup: medicalRecord.bloodGroup || "Not set",
         lastUpdated: medicalRecord.updatedAt,
@@ -36,14 +37,32 @@ export const getDashboardStats = async (req, res) => {
     };
 
     if (policeRecord) {
-      const activeCases = policeRecord.cases?.filter(c => 
-        ["pending", "under_investigation"].includes(c.status)
-      ).length || 0;
+      const activeCases =
+        policeRecord.cases?.filter((c) =>
+          ["pending", "under_investigation"].includes(c.status),
+        ).length || 0;
 
       policeStats = {
         count: policeRecord.cases?.length || 0,
         status: activeCases > 0 ? `${activeCases} Active Cases` : "Clear",
         lastUpdated: policeRecord.updatedAt,
+      };
+    }
+
+    const latestTaxRecord = await TaxRecord.findOne({ user: userId }).sort({
+      createdAt: -1,
+    });
+    let taxStats = {
+      taxAmount: 0,
+      fiscalYear: "N/A",
+      lastUpdated: null,
+    };
+
+    if (latestTaxRecord) {
+      taxStats = {
+        taxAmount: latestTaxRecord.taxAmount || 0,
+        fiscalYear: latestTaxRecord.fiscalYear || "N/A",
+        lastUpdated: latestTaxRecord.updatedAt,
       };
     }
 
@@ -57,6 +76,7 @@ export const getDashboardStats = async (req, res) => {
       medical: medicalStats,
       police: policeStats,
       family: familyStats,
+      tax: taxStats,
     });
   } catch (error) {
     console.error("Error fetching dashboard stats:", error);

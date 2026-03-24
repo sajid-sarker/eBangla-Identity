@@ -17,6 +17,7 @@ import {
 import axios from "axios";
 import DownloadIcon from "@mui/icons-material/Download";
 import CalculateIcon from "@mui/icons-material/Calculate";
+import SideMenu from "../components/SideMenu";
 
 const TaxRecords = ({ user }) => {
   const [selectedYear, setSelectedYear] = useState("2026");
@@ -77,6 +78,7 @@ const TaxRecords = ({ user }) => {
       setIncome(""); // Clear input
       fetchTaxData(); // Refresh summary
     } catch (err) {
+      console.error("Failed to store tax info:", err);
       setMessage({
         open: true,
         text: "Failed to store information. Check if your server is running.",
@@ -86,13 +88,17 @@ const TaxRecords = ({ user }) => {
   };
 
   return (
-    <Box
-      sx={{
-        p: { xs: 2, md: 4 },
-        backgroundColor: "#f9fafb",
-        minHeight: "100vh",
-      }}
-    >
+    <Box sx={{ display: "flex", minHeight: "100vh" }}>
+      <SideMenu user={user} />
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: { xs: 2, md: 4 },
+          backgroundColor: "#f9fafb",
+          overflow: "auto",
+        }}
+      >
       <Paper
         elevation={3}
         sx={{
@@ -278,6 +284,7 @@ const TaxRecords = ({ user }) => {
           {message.text}
         </Alert>
       </Snackbar>
+      </Box>
     </Box>
   );
 };

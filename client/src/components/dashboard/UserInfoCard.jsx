@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
@@ -24,6 +24,7 @@ export default function UserInfoCard({ user, setUser }) {
     gender: "",
     maritalStatus: "",
     phone: "",
+    yearlyIncome: 0,
     address: {
       division: "",
       district: "",
@@ -32,7 +33,7 @@ export default function UserInfoCard({ user, setUser }) {
     },
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (user) {
       setFormData({
         name: user.name || "",
@@ -43,6 +44,7 @@ export default function UserInfoCard({ user, setUser }) {
         gender: user.gender || "",
         maritalStatus: user.maritalStatus || "",
         phone: user.phone || "",
+        yearlyIncome: user.yearlyIncome || 0,
         address: {
           division: user.address?.division || "",
           district: user.address?.district || "",
@@ -87,6 +89,7 @@ export default function UserInfoCard({ user, setUser }) {
     dateOfBirth: "Not set",
     gender: "Not set",
     phone: "Not set",
+    yearlyIncome: 0,
   };
 
   return (
@@ -176,189 +179,197 @@ export default function UserInfoCard({ user, setUser }) {
         </Box>
 
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="caption" color="text.secondary">
-              National ID (NID)
-            </Typography>
-            {isEditing ? (
-              <TextField
-                fullWidth
-                name="nid"
-                value={formData.nid}
-                onChange={handleChange}
-                size="small"
-              />
-            ) : (
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                {displayUser.nid || "Not set"}
-              </Typography>
-            )}
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="caption" color="text.secondary">
-              Date of Birth
-            </Typography>
-            {isEditing ? (
-              <TextField
-                fullWidth
-                type="date"
-                name="dateOfBirth"
-                value={formData.dateOfBirth}
-                onChange={handleChange}
-                size="small"
-                InputLabelProps={{ shrink: true }}
-              />
-            ) : (
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                {displayUser.dateOfBirth
-                  ? new Date(displayUser.dateOfBirth).toLocaleDateString()
-                  : "Not set"}
-              </Typography>
-            )}
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="caption" color="text.secondary">
-              Gender
-            </Typography>
-            {isEditing ? (
-              <TextField
-                select
-                fullWidth
-                name="gender"
-                value={formData.gender}
-                onChange={handleChange}
-                size="small"
-              >
-                <MenuItem value="Male">Male</MenuItem>
-                <MenuItem value="Female">Female</MenuItem>
-                <MenuItem value="Other">Other</MenuItem>
-              </TextField>
-            ) : (
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                {displayUser.gender || "Not set"}
-              </Typography>
-            )}
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="caption" color="text.secondary">
-              Phone Number
-            </Typography>
-            {isEditing ? (
-              <TextField
-                fullWidth
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                size="small"
-              />
-            ) : (
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                {displayUser.phone || "Not set"}
-              </Typography>
-            )}
+          {/* Personal Info Row */}
+          <Grid item xs={12}>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography variant="caption" color="text.secondary">
+                  National ID (NID)
+                </Typography>
+                {isEditing ? (
+                  <TextField
+                    fullWidth
+                    name="nid"
+                    value={formData.nid}
+                    onChange={handleChange}
+                    size="small"
+                  />
+                ) : (
+                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                    {displayUser.nid || "Not set"}
+                  </Typography>
+                )}
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography variant="caption" color="text.secondary">
+                  Date of Birth
+                </Typography>
+                {isEditing ? (
+                  <TextField
+                    fullWidth
+                    type="date"
+                    name="dateOfBirth"
+                    value={formData.dateOfBirth}
+                    onChange={handleChange}
+                    size="small"
+                    InputLabelProps={{ shrink: true }}
+                  />
+                ) : (
+                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                    {displayUser.dateOfBirth
+                      ? new Date(displayUser.dateOfBirth).toLocaleDateString()
+                      : "Not set"}
+                  </Typography>
+                )}
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography variant="caption" color="text.secondary">
+                  Gender
+                </Typography>
+                {isEditing ? (
+                  <TextField
+                    select
+                    fullWidth
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleChange}
+                    size="small"
+                  >
+                    <MenuItem value="Male">Male</MenuItem>
+                    <MenuItem value="Female">Female</MenuItem>
+                    <MenuItem value="Other">Other</MenuItem>
+                  </TextField>
+                ) : (
+                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                    {displayUser.gender || "Not set"}
+                  </Typography>
+                )}
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography variant="caption" color="text.secondary">
+                  Phone Number
+                </Typography>
+                {isEditing ? (
+                  <TextField
+                    fullWidth
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    size="small"
+                  />
+                ) : (
+                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                    {displayUser.phone || "Not set"}
+                  </Typography>
+                )}
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography variant="caption" color="text.secondary">
+                  Marital Status
+                </Typography>
+                {isEditing ? (
+                  <TextField
+                    select
+                    fullWidth
+                    name="maritalStatus"
+                    value={formData.maritalStatus}
+                    onChange={handleChange}
+                    size="small"
+                  >
+                    <MenuItem value="single">Single</MenuItem>
+                    <MenuItem value="married">Married</MenuItem>
+                    <MenuItem value="widowed">Widowed</MenuItem>
+                  </TextField>
+                ) : (
+                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                    {displayUser.maritalStatus
+                      ? displayUser.maritalStatus.charAt(0).toUpperCase() + displayUser.maritalStatus.slice(1)
+                      : "Not set"}
+                  </Typography>
+                )}
+              </Grid>
+            </Grid>
           </Grid>
 
-          {/* Address Fields */}
+          {/* Address Fields Row */}
           <Grid item xs={12}>
-            <Typography variant="subtitle2" sx={{ mt: 1 }}>
+            <Typography variant="subtitle1" sx={{ mt: 1, fontWeight: 600 }}>
               Address
             </Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="caption" color="text.secondary">
-              Division
-            </Typography>
-            {isEditing ? (
-              <TextField
-                fullWidth
-                name="address.division"
-                value={formData.address.division}
-                onChange={handleChange}
-                size="small"
-              />
-            ) : (
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                {displayUser.address?.division || "Not set"}
-              </Typography>
-            )}
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="caption" color="text.secondary">
-              District
-            </Typography>
-            {isEditing ? (
-              <TextField
-                fullWidth
-                name="address.district"
-                value={formData.address.district}
-                onChange={handleChange}
-                size="small"
-              />
-            ) : (
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                {displayUser.address?.district || "Not set"}
-              </Typography>
-            )}
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="caption" color="text.secondary">
-              Upazilla
-            </Typography>
-            {isEditing ? (
-              <TextField
-                fullWidth
-                name="address.upazilla"
-                value={formData.address.upazilla}
-                onChange={handleChange}
-                size="small"
-              />
-            ) : (
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                {displayUser.address?.upazilla || "Not set"}
-              </Typography>
-            )}
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="caption" color="text.secondary">
-              Village
-            </Typography>
-            {isEditing ? (
-              <TextField
-                fullWidth
-                name="address.village"
-                value={formData.address.village}
-                onChange={handleChange}
-                size="small"
-              />
-            ) : (
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                {displayUser.address?.village || "Not set"}
-              </Typography>
-            )}
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="caption" color="text.secondary">
-              Marital Status
-            </Typography>
-            {isEditing ? (
-              <TextField
-                select
-                fullWidth
-                name="maritalStatus"
-                value={formData.maritalStatus}
-                onChange={handleChange}
-                size="small"
-              >
-                <MenuItem value="single">Single</MenuItem>
-                <MenuItem value="married">Married</MenuItem>
-                <MenuItem value="widowed">Widowed</MenuItem>
-              </TextField>
-            ) : (
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                {displayUser.maritalStatus || "Not set"}
-              </Typography>
-            )}
+            <Grid container spacing={3} sx={{ mt: 0 }}>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography variant="caption" color="text.secondary">
+                  Division
+                </Typography>
+                {isEditing ? (
+                  <TextField
+                    fullWidth
+                    name="address.division"
+                    value={formData.address.division}
+                    onChange={handleChange}
+                    size="small"
+                  />
+                ) : (
+                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                    {displayUser.address?.division || "Not set"}
+                  </Typography>
+                )}
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography variant="caption" color="text.secondary">
+                  District
+                </Typography>
+                {isEditing ? (
+                  <TextField
+                    fullWidth
+                    name="address.district"
+                    value={formData.address.district}
+                    onChange={handleChange}
+                    size="small"
+                  />
+                ) : (
+                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                    {displayUser.address?.district || "Not set"}
+                  </Typography>
+                )}
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography variant="caption" color="text.secondary">
+                  Upazilla
+                </Typography>
+                {isEditing ? (
+                  <TextField
+                    fullWidth
+                    name="address.upazilla"
+                    value={formData.address.upazilla}
+                    onChange={handleChange}
+                    size="small"
+                  />
+                ) : (
+                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                    {displayUser.address?.upazilla || "Not set"}
+                  </Typography>
+                )}
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Typography variant="caption" color="text.secondary">
+                  Village
+                </Typography>
+                {isEditing ? (
+                  <TextField
+                    fullWidth
+                    name="address.village"
+                    value={formData.address.village}
+                    onChange={handleChange}
+                    size="small"
+                  />
+                ) : (
+                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                    {displayUser.address?.village || "Not set"}
+                  </Typography>
+                )}
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </CardContent>

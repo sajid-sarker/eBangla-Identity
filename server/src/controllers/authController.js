@@ -1,6 +1,7 @@
 import Citizen from "../models/Citizen.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import TaxRecord from "../models/TaxRecord.js";
 
 // Helper feature to generate token and set cookie
 const generateTokenAndSetCookie = (res, citizenId) => {

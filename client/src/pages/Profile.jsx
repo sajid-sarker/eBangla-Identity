@@ -13,23 +13,35 @@ import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
 import LocalPoliceIcon from "@mui/icons-material/LocalPolice";
 import FamilyRestroomIcon from "@mui/icons-material/FamilyRestroom";
 import PaymentsIcon from "@mui/icons-material/Payments";
+import HomeWorkIcon from "@mui/icons-material/HomeWork"; 
 
 export default function Profile({ user, setUser }) {
   const [stats, setStats] = useState(null);
+  const [latestTax, setLatestTax] = useState(null);
+
+  
+  axios.defaults.withCredentials = true;
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchDashboardData = async () => {
       try {
-        const res = await axios.get(
-          "http://localhost:5000/api/stats/dashboard",
-        );
-        setStats(res.data);
+      
+        const statsRes = await axios.get("http://localhost:5000/api/stats/dashboard");
+        setStats(statsRes.data);
+
+        
+        const taxRes = await axios.get("http://localhost:5000/api/tax?year=2026");
+        if (taxRes.data && taxRes.data.length > 0) {
+        
+          setLatestTax(taxRes.data[0]);
+        }
       } catch (err) {
-        console.error("Error fetching stats:", err);
+        console.error("Error fetching dashboard data:", err);
       }
     };
-    fetchStats();
-  }, []);
+    
+    if (user) fetchDashboardData();
+  }, [user]);
 
   const formatDate = (date) => {
     if (!date) return "N/A";
@@ -39,13 +51,13 @@ export default function Profile({ user, setUser }) {
       year: "numeric",
     });
   };
+
   return (
     <>
       <CssBaseline enableColorScheme />
       <Box sx={{ display: "flex", minHeight: "100vh" }}>
         <SideMenu user={user} />
 
-        {/* Main content */}
         <Box
           component="main"
           sx={(theme) => ({
@@ -57,6 +69,7 @@ export default function Profile({ user, setUser }) {
             p: 3,
           })}
         >
+          {/* Completion Warning Banner */}
           {user && !user.isProfileComplete && (
             <Box
               sx={{
@@ -68,11 +81,11 @@ export default function Profile({ user, setUser }) {
               }}
             >
               <Typography variant="body1" fontWeight="bold">
-                Action Required: Please complete your profile to access all
-                features.
+                Action Required: Please complete your profile to access all features.
               </Typography>
             </Box>
           )}
+
           <Stack
             spacing={3}
             sx={{
@@ -81,62 +94,67 @@ export default function Profile({ user, setUser }) {
               mt: { xs: 8, md: 2 },
             }}
           >
-            <Typography
-              variant="h4"
-              sx={{ mb: 1, fontWeight: 700, color: "primary.main" }}
-            >
+            <Typography variant="h4" sx={{ mb: 1, fontWeight: 700, color: "primary.main" }}>
               My Profile
             </Typography>
 
             <UserInfoCard user={user} setUser={setUser} />
 
             <Grid container spacing={3}>
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} sm={6} md={4}>
                 <RecordCard
                   title="Medical Records"
-                  value={
-                    stats?.medical
-                      ? `${stats.medical.bloodGroup} | ${stats.medical.count} Records`
-                      : "..."
-                  }
+                  value={stats?.medical ? `${stats.medical.bloodGroup} | ${stats.medical.count} Records` : "Not set | 0 Records"}
                   icon={<MedicalServicesIcon />}
                   lastUpdated={formatDate(stats?.medical?.lastUpdated)}
                   color="error.main"
                 />
               </Grid>
-              <Grid item xs={12} md={4}>
+
+              <Grid item xs={12} sm={6} md={4}>
                 <RecordCard
                   title="Police Records"
-                  value={stats?.police ? stats.police.status : "..."}
+                  value={stats?.police ? stats.police.status : "Clear"}
                   icon={<LocalPoliceIcon />}
                   lastUpdated={formatDate(stats?.police?.lastUpdated)}
                   color="primary.main"
                 />
               </Grid>
-              <Grid item xs={12} md={4}>
+
+              <Grid item xs={12} sm={6} md={4}>
                 <RecordCard
                   title="Family Records"
-                  value={
-                    stats?.family ? `${stats.family.count} Members` : "..."
-                  }
+                  value={stats?.family ? `${stats.family.count} Members` : "0 Members"}
                   icon={<FamilyRestroomIcon />}
                   lastUpdated={formatDate(stats?.family?.lastUpdated)}
                   color="success.main"
                 />
               </Grid>
 
-              <Grid item xs={12} md={3}>
+              {/* NEW: Properties Card */}
+              <Grid item xs={12} sm={6} md={4}>
+                <RecordCard
+                  title="Property Records"
+                  value="0 Assets" 
+                  icon={<HomeWorkIcon />}
+                  lastUpdated="Not set"
+                  color="secondary.main"
+                />
+              </Grid>
+
+               
+              <Grid item xs={12} sm={6} md={4}>
                 <RecordCard
                   title="Tax Summary"
                   value={
-                    stats?.tax
-                      ? `৳ ${stats.tax.taxAmount.toLocaleString()} Tax`
-                      : "৳ 0 Calculated"
+                    latestTax 
+                      ? ` ${latestTax.taxAmount.toLocaleString()} Tax` 
+                      : " 0 Calculated"
                   }
                   icon={<PaymentsIcon />}
                   lastUpdated={
-                    stats?.tax?.lastUpdated
-                      ? `Year: ${stats.tax.fiscalYear}`
+                    latestTax 
+                      ? `Last updated: ${new Date(latestTax.updatedAt).getFullYear()}` 
                       : "No submissions"
                   }
                   color="warning.main"

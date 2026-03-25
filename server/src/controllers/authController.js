@@ -16,8 +16,8 @@ const generateTokenAndSetCookie = (res, citizenId) => {
   // Set JWT as httpOnly cookie
   res.cookie("jwt", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV !== "development", // Use secure cookies in production
-    sameSite: "strict", // Prevent CSRF attacks
+    secure: process.env.NODE_ENV !== "development",
+    sameSite: "strict",
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
   });
 
@@ -26,9 +26,7 @@ const generateTokenAndSetCookie = (res, citizenId) => {
 
 // @desc    Register a new citizen
 // @route   POST /api/auth/register
-// @access  Public
 export const register = async (req, res) => {
-  console.log("Registering user:", req.body.email);
   try {
     const { name, email, password } = req.body || {};
 
@@ -38,7 +36,6 @@ export const register = async (req, res) => {
         .json({ message: "Please provide name, email, and password" });
     }
 
-    // Check if citizen exists
     const citizenExists = await Citizen.findOne({ email });
 
     if (citizenExists) {
@@ -47,11 +44,9 @@ export const register = async (req, res) => {
         .json({ message: "Citizen already exists with that email" });
     }
 
-    // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create citizen
     const citizen = await Citizen.create({
       name,
       email,
@@ -71,6 +66,7 @@ export const register = async (req, res) => {
         phone: citizen.phone,
         address: citizen.address,
         maritalStatus: citizen.maritalStatus,
+        yearlyIncome: citizen.yearlyIncome || 0, // ADDED
         isProfileComplete: citizen.isProfileComplete,
         message: "Registration successful",
       });
@@ -85,7 +81,6 @@ export const register = async (req, res) => {
 
 // @desc    Authenticate a citizen
 // @route   POST /api/auth/login
-// @access  Public
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body || {};
@@ -96,12 +91,12 @@ export const login = async (req, res) => {
         .json({ message: "Please provide email and password" });
     }
 
-    // Check for user email
     const citizen = await Citizen.findOne({ email });
 
     if (citizen && (await bcrypt.compare(password, citizen.password))) {
       generateTokenAndSetCookie(res, citizen._id);
 
+      // Returning the whole object ensures yearlyIncome is included
       res.status(200).json(citizen);
     } else {
       res.status(401).json({ message: "Invalid credentials" });
@@ -113,8 +108,6 @@ export const login = async (req, res) => {
 };
 
 // @desc    Logout citizen / clear cookie
-// @route   POST /api/auth/logout
-// @access  Public
 export const logout = (req, res) => {
   res.cookie("jwt", "", {
     httpOnly: true,
@@ -125,7 +118,6 @@ export const logout = (req, res) => {
 
 // @desc    Update user profile
 // @route   PUT /api/auth/profile
-// @access  Private
 export const updateProfile = async (req, res) => {
   try {
     const citizen = await Citizen.findById(req.user._id);
@@ -155,6 +147,7 @@ export const updateProfile = async (req, res) => {
         citizen.password = await bcrypt.hash(req.body.password, salt);
       }
 
+      // HANDLE INCOME AND TAX SYNC
       if (req.body.yearlyIncome !== undefined) {
         const income = Number(req.body.yearlyIncome);
         citizen.yearlyIncome = income;
@@ -173,6 +166,7 @@ export const updateProfile = async (req, res) => {
 
       const updatedCitizen = await citizen.save();
 
+      // RETURN DATA INCLUDING YEARLY INCOME
       res.status(200).json({
         _id: updatedCitizen._id,
         name: updatedCitizen.name,
@@ -183,6 +177,7 @@ export const updateProfile = async (req, res) => {
         phone: updatedCitizen.phone,
         address: updatedCitizen.address,
         maritalStatus: updatedCitizen.maritalStatus,
+        yearlyIncome: updatedCitizen.yearlyIncome, // ADDED
         isProfileComplete: updatedCitizen.isProfileComplete,
         message: "Profile updated successfully",
       });
@@ -197,7 +192,6 @@ export const updateProfile = async (req, res) => {
 
 // @desc    Get user data
 // @route   GET /api/auth/me
-// @access  Private
 export const getMe = async (req, res) => {
   try {
     const citizen = await Citizen.findById(req.user._id);
@@ -212,6 +206,7 @@ export const getMe = async (req, res) => {
         phone: citizen.phone,
         address: citizen.address,
         maritalStatus: citizen.maritalStatus,
+        yearlyIncome: citizen.yearlyIncome || 0, // ADDED
         isProfileComplete: citizen.isProfileComplete,
       });
     } else {

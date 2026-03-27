@@ -19,6 +19,7 @@ const mainListItems = [
   { text: "Medical", icon: <AssignmentRoundedIcon />, path: "/medical" },
   { text: "Police", icon: <AssignmentRoundedIcon />, path: "/police" },
   { text: "Tax", icon: <AssignmentRoundedIcon />, path: "/tax" },
+  { text: "Education", icon: <AssignmentRoundedIcon />, path: "/education" },
 ];
 
 const secondaryListItems = [
@@ -39,7 +40,8 @@ export default function MenuContent({ user }) {
             !isProfileComplete &&
             (item.text === "Medical" ||
               item.text === "Police" ||
-              item.text === "Tax");
+              item.text === "Tax" ||
+              item.text === "Education");
           return (
             <ListItem key={index} disablePadding sx={{ display: "block" }}>
               <ListItemButton

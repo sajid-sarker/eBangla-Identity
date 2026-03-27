@@ -10,7 +10,8 @@ import policeRoutes from "./routes/policeRoutes.js";
 import statsRoutes from "./routes/statsRoutes.js";
 import taxRoutes from "./routes/taxRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
-import errorMiddleware from "./middleware/errorMiddleware.js";
+import educationRoutes from "./routes/educationRoutes.js";
+import errorMiddleware from "./middlewares/errorMiddleware.js";
 
 const app = express();
 
@@ -29,5 +30,6 @@ app.use("/api/medical", medicalRoutes);
 app.use("/api/police", policeRoutes);
 app.use("/api/tax", taxRoutes);
 app.use("/api/stats", statsRoutes);
+app.use("/api/education", educationRoutes);
 
 export default app;

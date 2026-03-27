@@ -3,19 +3,18 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { updateTaxRecord } from "./taxController.js";
 import Citizen from "../models/Citizen.js";
-import TaxRecord from "../models/TaxRecord.js";
 
 const generateTokenAndSetCookie = (res, citizenId) => {
   const token = jwt.sign({ id: citizenId }, JWT_SECRET, {
     expiresIn: JWT_EXPIRES_IN,
   });
-
+  const maxAge = parseInt(JWT_EXPIRES_IN) * 60 * 1000;
   // Set JWT as httpOnly cookie
   res.cookie("jwt", token, {
     httpOnly: true,
     secure: NODE_ENV !== "development", // Set to true in production
     sameSite: "strict", // Prevent CSRF attacks
-    maxAge: JWT_EXPIRES_IN,
+    maxAge: maxAge,
   });
   return token;
 };
@@ -28,10 +27,12 @@ export const register = async (req, res) => {
 
   try {
     const { name, email, password } = req.body;
-    if (!name || !email || !password) return res.status(400).json({ message: "Missing fields" });
+    if (!name || !email || !password)
+      return res.status(400).json({ message: "Missing fields" });
 
     const citizenExists = await Citizen.findOne({ email });
-    if (citizenExists) return res.status(400).json({ message: "Citizen already exists" });
+    if (citizenExists)
+      return res.status(400).json({ message: "Citizen already exists" });
 
     if (citizenExists) {
       return res
@@ -56,14 +57,14 @@ export const register = async (req, res) => {
     );
 
     if (citizen) {
-      const token = generateTokenAndSetCookie(res, citizen._id);
+      const token = generateTokenAndSetCookie(res, citizen[0]._id);
 
       res.status(201).json({
         success: true,
         message: "Registration successful",
         data: {
           token: token,
-          user: citizen,
+          user: citizen[0],
         },
       });
     }
@@ -97,7 +98,7 @@ export const login = async (req, res) => {
         message: "Login successful",
         data: {
           token,
-          citizen,
+          user: citizen,
         },
       });
     } else {
@@ -114,13 +115,11 @@ export const logout = (req, res) => {
   res.status(200).json({ message: "Logged out" });
 };
 
-
 export const updateProfile = async (req, res) => {
   try {
     const citizen = await Citizen.findById(req.user._id);
     if (!citizen) return res.status(404).json({ message: "Citizen not found" });
 
-    
     citizen.name = req.body.name || citizen.name;
     citizen.nid = req.body.nid || citizen.nid;
     citizen.dateOfBirth = req.body.dateOfBirth || citizen.dateOfBirth;
@@ -139,29 +138,12 @@ export const updateProfile = async (req, res) => {
 
     if (req.body.yearlyIncome !== undefined) {
       citizen.yearlyIncome = Number(req.body.yearlyIncome);
-    
+
       await updateTaxRecord(citizen._id, citizen.yearlyIncome);
     }
 
-     
-    const isComplete = !!(
-      citizen.name &&
-      citizen.nid &&
-      citizen.dateOfBirth &&
-      citizen.gender &&
-      citizen.phone &&
-      citizen.maritalStatus &&
-      citizen.address?.division &&
-      citizen.address?.district &&
-      citizen.address?.upazilla &&
-      citizen.address?.village
-    );
-
-    citizen.isProfileComplete = isComplete;
-
     const updatedCitizen = await citizen.save();
 
-    
     res.status(200).json({
       _id: updatedCitizen._id,
       name: updatedCitizen.name,

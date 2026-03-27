@@ -117,10 +117,11 @@ export default function Login({ setUser }) {
       );
       
       console.log("Login successful:", response.data);
-      if (setUser) setUser(response.data);
+      const userData = response.data.data.user;
+      if (setUser) setUser(userData);
       
       // Redirect based on profile completion status
-      if (response.data.isProfileComplete) {
+      if (userData.isProfileComplete) {
         navigate("/dashboard");
       } else {
         navigate("/profile");

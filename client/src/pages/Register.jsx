@@ -114,7 +114,7 @@ export default function Register({ setUser }) {
       );
       
       console.log("Registration successful:", response.data);
-      if (setUser) setUser(response.data);
+      if (setUser) setUser(response.data.data.user);
       // Redirect to profile after successful registration to complete info
       navigate("/profile");
     } catch (error) {

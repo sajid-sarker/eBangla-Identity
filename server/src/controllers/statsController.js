@@ -1,6 +1,7 @@
 import MedicalRecord from "../models/MedicalRecord.js";
 import PoliceRecord from "../models/PoliceRecord.js";
 import TaxRecord from "../models/TaxRecord.js";
+import EducationRecord from "../models/EducationRecord.js";
 
 // @desc    Get dashboard statistics for the logged-in user
 // @route   GET /api/stats/dashboard
@@ -72,11 +73,26 @@ export const getDashboardStats = async (req, res) => {
       lastUpdated: req.user.updatedAt,
     };
 
+    // Education stats
+    const educationRecords = await EducationRecord.find({
+      citizenId: userId,
+    }).sort({
+      passingYear: -1,
+    });
+    let educationStats = {
+      count: educationRecords.length,
+      latestQualification:
+        educationRecords.length > 0 ? educationRecords[0].qualification : "N/A",
+      lastUpdated:
+        educationRecords.length > 0 ? educationRecords[0].updatedAt : null,
+    };
+
     res.status(200).json({
       medical: medicalStats,
       police: policeStats,
       family: familyStats,
       tax: taxStats,
+      education: educationStats,
     });
   } catch (error) {
     console.error("Error fetching dashboard stats:", error);

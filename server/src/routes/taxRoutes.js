@@ -1,13 +1,11 @@
 import express from "express";
-const router = express.Router();
-
-// Import the controller functions
 import {
   createTaxRecord,
   getTaxRecords,
 } from "../controllers/taxController.js";
-// Import your authentication middleware (protects the route)
-import { protect } from "../middleware/authMiddleware.js";
+import { protect } from "../middlewares/authMiddleware.js";
+
+const router = express.Router();
 
 // Routes
 // POST: http://localhost:5000/api/tax/submit

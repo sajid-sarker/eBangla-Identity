@@ -12,6 +12,7 @@ import Profile from "./pages/Profile";
 import MedicalRecords from "./pages/MedicalRecords";
 import PoliceRecords from "./pages/PoliceRecords";
 import TaxRecords from "./pages/TaxRecords";
+import EducationRecords from "./pages/EducationRecords";
 
 // Configure axios defaults
 axios.defaults.withCredentials = true;
@@ -121,6 +122,14 @@ function App() {
             element={
               <ProtectedRoute user={user} loading={loading}>
                 <TaxRecords user={user} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/education"
+            element={
+              <ProtectedRoute user={user} loading={loading}>
+                <EducationRecords user={user} />
               </ProtectedRoute>
             }
           />

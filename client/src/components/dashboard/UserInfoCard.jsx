@@ -24,7 +24,7 @@ export default function UserInfoCard({ user, setUser }) {
     gender: "",
     maritalStatus: "",
     phone: "",
-    yearlyIncome: 0,
+    yearlyIncome: 0, 
     address: {
       division: "",
       district: "",
@@ -44,7 +44,7 @@ export default function UserInfoCard({ user, setUser }) {
         gender: user.gender || "",
         maritalStatus: user.maritalStatus || "",
         phone: user.phone || "",
-        yearlyIncome: user.yearlyIncome || 0,
+        yearlyIncome: user.yearlyIncome || 0, 
         address: {
           division: user.address?.division || "",
           district: user.address?.district || "",
@@ -84,7 +84,7 @@ export default function UserInfoCard({ user, setUser }) {
 
   const displayUser = user || {
     name: "Unknown User",
-    email: "[EMAIL_ADDRESS]",
+    email: "unknown@example.com",
     nid: "Not set",
     dateOfBirth: "Not set",
     gender: "Not set",
@@ -179,10 +179,9 @@ export default function UserInfoCard({ user, setUser }) {
         </Box>
 
         <Grid container spacing={3}>
-          {/* Personal Info Row */}
           <Grid item xs={12}>
             <Grid container spacing={3}>
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={6} md={2.4}>
                 <Typography variant="caption" color="text.secondary">
                   National ID (NID)
                 </Typography>
@@ -200,7 +199,7 @@ export default function UserInfoCard({ user, setUser }) {
                   </Typography>
                 )}
               </Grid>
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={6} md={2.4}>
                 <Typography variant="caption" color="text.secondary">
                   Date of Birth
                 </Typography>
@@ -222,7 +221,7 @@ export default function UserInfoCard({ user, setUser }) {
                   </Typography>
                 )}
               </Grid>
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={6} md={2.4}>
                 <Typography variant="caption" color="text.secondary">
                   Gender
                 </Typography>
@@ -245,7 +244,7 @@ export default function UserInfoCard({ user, setUser }) {
                   </Typography>
                 )}
               </Grid>
-              <Grid item xs={12} sm={6} md={3}>
+              <Grid item xs={12} sm={6} md={2.4}>
                 <Typography variant="caption" color="text.secondary">
                   Phone Number
                 </Typography>
@@ -263,7 +262,29 @@ export default function UserInfoCard({ user, setUser }) {
                   </Typography>
                 )}
               </Grid>
-              <Grid item xs={12} sm={6} md={3}>
+              
+              {/* Yearly Income Added Below */}
+              <Grid item xs={12} sm={6} md={2.4}>
+                <Typography variant="caption" color="text.secondary">
+                  Yearly Income
+                </Typography>
+                {isEditing ? (
+                  <TextField
+                    fullWidth
+                    type="number"
+                    name="yearlyIncome"
+                    value={formData.yearlyIncome}
+                    onChange={handleChange}
+                    size="small"
+                  />
+                ) : (
+                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                    ৳ {displayUser.yearlyIncome?.toLocaleString() || "0"}
+                  </Typography>
+                )}
+              </Grid>
+
+              <Grid item xs={12} sm={6} md={2.4}>
                 <Typography variant="caption" color="text.secondary">
                   Marital Status
                 </Typography>

@@ -1,28 +1,40 @@
 import jwt from "jsonwebtoken";
 import Citizen from "../models/Citizen.js";
+import { JWT_SECRET } from "../config/env.js";
 
 export const protect = async (req, res, next) => {
   try {
     let token;
 
-    // Check for token in cookies
-    if (req.cookies && req.cookies.jwt) {
+    // Cookie first (preferred)
+    if (req.cookies?.jwt) {
       token = req.cookies.jwt;
+    }
+    // Fallback to Bearer (optional)
+    else if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
     }
 
     if (!token) {
-      return res.status(401).json({ message: "Not authorized to access this route" });
+      return res
+        .status(401)
+        .json({ message: "Not authorized to access this route" });
     }
 
     try {
       // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || "fallback_secret");
+      const decoded = jwt.verify(token, JWT_SECRET);
 
       // Attach user to request, exclude password
       req.user = await Citizen.findById(decoded.id).select("-password");
-      
+
       if (!req.user) {
-         return res.status(401).json({ message: "Not authorized, user not found" });
+        return res
+          .status(401)
+          .json({ message: "Not authorized, user not found" });
       }
 
       next();

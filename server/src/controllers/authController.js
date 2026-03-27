@@ -1,21 +1,31 @@
-import Citizen from "../models/Citizen.js";
+import { JWT_SECRET, JWT_EXPIRES_IN, NODE_ENV } from "../config/env.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { updateTaxRecord } from "./taxController.js";
+import Citizen from "../models/Citizen.js";
+import TaxRecord from "../models/TaxRecord.js";
 
 const generateTokenAndSetCookie = (res, citizenId) => {
-  const token = jwt.sign({ id: citizenId }, process.env.JWT_SECRET || "fallback_secret", { expiresIn: "30d" });
+  const token = jwt.sign({ id: citizenId }, JWT_SECRET, {
+    expiresIn: JWT_EXPIRES_IN,
+  });
+
+  // Set JWT as httpOnly cookie
   res.cookie("jwt", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV !== "development",
-    sameSite: "strict",
-    maxAge: 30 * 24 * 60 * 60 * 1000,
+    secure: NODE_ENV !== "development", // Set to true in production
+    sameSite: "strict", // Prevent CSRF attacks
+    maxAge: JWT_EXPIRES_IN,
   });
   return token;
 };
 
 // AUTH LOGIC
 export const register = async (req, res) => {
+  console.log("Registering user:", req.body.email);
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     const { name, email, password } = req.body;
     if (!name || !email || !password) return res.status(400).json({ message: "Missing fields" });
@@ -23,33 +33,80 @@ export const register = async (req, res) => {
     const citizenExists = await Citizen.findOne({ email });
     if (citizenExists) return res.status(400).json({ message: "Citizen already exists" });
 
+    if (citizenExists) {
+      return res
+        .status(409)
+        .json({ message: "Citizen already exists with that email" });
+    }
+
+    // Hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    const citizen = await Citizen.create({ name, email, password: hashedPassword });
+    // Create citizen
+    const citizen = await Citizen.create(
+      [
+        {
+          name,
+          email,
+          password: hashedPassword,
+        },
+      ],
+      { session },
+    );
 
     if (citizen) {
-      generateTokenAndSetCookie(res, citizen._id);
-      res.status(201).json({ 
-        _id: citizen._id, 
-        name: citizen.name, 
-        email: citizen.email, 
-        yearlyIncome: 0,
-        isProfileComplete: false 
+      const token = generateTokenAndSetCookie(res, citizen._id);
+
+      res.status(201).json({
+        success: true,
+        message: "Registration successful",
+        data: {
+          token: token,
+          user: citizen,
+        },
       });
     }
-  } catch (error) { res.status(500).json({ message: "Server Error" }); }
+    await session.commitTransaction();
+    session.endSession();
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+
+    console.error("Error in registration:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
 };
 
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const citizen = await Citizen.findOne({ email });
-    if (citizen && (await bcrypt.compare(password, citizen.password))) {
-      generateTokenAndSetCookie(res, citizen._id);
-      res.status(200).json(citizen);
-    } else { res.status(401).json({ message: "Invalid credentials" }); }
-  } catch (error) { res.status(500).json({ message: "Server Error" }); }
+
+    if (!citizen) {
+      return res.status(404).json({ message: "Citizen not found" });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, citizen.password);
+
+    if (isPasswordValid) {
+      const token = generateTokenAndSetCookie(res, citizen._id);
+
+      res.status(200).json({
+        success: true,
+        message: "Login successful",
+        data: {
+          token,
+          citizen,
+        },
+      });
+    } else {
+      res.status(401).json({ message: "Invalid credentials" });
+    }
+  } catch (error) {
+    console.error("Error in login:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
 };
 
 export const logout = (req, res) => {
@@ -123,12 +180,4 @@ export const updateProfile = async (req, res) => {
     console.error("Profile Update Error:", error);
     res.status(500).json({ message: "Server Error" });
   }
-};
-
-export const getMe = async (req, res) => {
-  try {
-    const citizen = await Citizen.findById(req.user._id);
-    if (citizen) res.status(200).json(citizen);
-    else res.status(404).json({ message: "Not found" });
-  } catch (error) { res.status(500).json({ message: "Server Error" }); }
 };

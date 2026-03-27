@@ -9,6 +9,7 @@ import medicalRoutes from "./routes/medicalRoutes.js";
 import policeRoutes from "./routes/policeRoutes.js";
 import statsRoutes from "./routes/statsRoutes.js";
 import taxRoutes from "./routes/taxRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 import errorMiddleware from "./middleware/errorMiddleware.js";
 
 const app = express();
@@ -23,6 +24,7 @@ app.use(cors({ origin: true, credentials: true }));
 
 //API Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
 app.use("/api/medical", medicalRoutes);
 app.use("/api/police", policeRoutes);
 app.use("/api/tax", taxRoutes);

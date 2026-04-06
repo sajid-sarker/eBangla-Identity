@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import axios from "axios";
+import { API_BASE_URL } from "../config/env";
 import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -108,7 +109,7 @@ export default function Register({ setUser }) {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/register",
+        `${API_BASE_URL}/auth/register`,
         { name, email, password },
         { withCredentials: true }
       );

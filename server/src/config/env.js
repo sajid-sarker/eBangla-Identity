@@ -4,4 +4,4 @@ import { config } from "dotenv";
 config(".env");
 
 export const { PORT, NODE_ENV, MONGO_URI, JWT_SECRET, JWT_EXPIRES_IN } =
-  process.env;
+process.env;

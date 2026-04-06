@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import axios from "axios";
+import { API_BASE_URL } from "../config/env";
 
 import SideMenu from "../components/SideMenu";
 import DetailedRecordCard from "../components/dashboard/DetailedRecordCard";
@@ -24,7 +25,7 @@ export default function PoliceRecords({ user }) {
   useEffect(() => {
     const fetchRecords = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/police/me");
+        const res = await axios.get(`${API_BASE_URL}/police/me`);
         setRecord(res.data);
       } catch (err) {
         if (err.response?.status !== 404) {

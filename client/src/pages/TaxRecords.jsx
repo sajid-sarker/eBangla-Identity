@@ -4,6 +4,7 @@ import {
   Button, Paper, TextField, CircularProgress, Divider, Alert, Snackbar
 } from "@mui/material";
 import axios from "axios";
+import { API_BASE_URL } from "../config/env";
 import DownloadIcon from "@mui/icons-material/Download";
 import CalculateIcon from "@mui/icons-material/Calculate";
 import SideMenu from "../components/SideMenu";
@@ -24,7 +25,7 @@ const TaxRecords = ({ user }) => {
     setLoading(true);
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/tax?year=${selectedYear}&t=${new Date().getTime()}`
+        `${API_BASE_URL}/tax?year=${selectedYear}&t=${new Date().getTime()}`
       );
       setRecords(res.data);
     } catch (err) {
@@ -47,7 +48,7 @@ const TaxRecords = ({ user }) => {
 
     try {
       const payload = { fiscalYear: selectedYear, totalIncome: Number(income) };
-      await axios.post("http://localhost:5000/api/tax/submit", payload);
+      await axios.post(`${API_BASE_URL}/tax/submit`, payload);
       
       setMessage({ open: true, text: "Tax updated successfully!", severity: "success" });
       setIncome(""); 

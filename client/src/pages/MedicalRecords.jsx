@@ -10,6 +10,7 @@ import Alert from "@mui/material/Alert";
 import Paper from "@mui/material/Paper";
 import Divider from "@mui/material/Divider";
 import axios from "axios";
+import { API_BASE_URL } from "../config/env";
 
 import SideMenu from "../components/SideMenu";
 import DetailedRecordCard from "../components/dashboard/DetailedRecordCard";
@@ -29,7 +30,7 @@ export default function MedicalRecords({ user }) {
   useEffect(() => {
     const fetchRecords = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/medical/me");
+        const res = await axios.get(`${API_BASE_URL}/medical/me`);
         setRecord(res.data);
       } catch (err) {
         if (err.response?.status !== 404) {

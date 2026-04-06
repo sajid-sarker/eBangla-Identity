@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import axios from "axios";
+import { API_BASE_URL } from "./config/env";
 
 import Navbar from "./components/common/Navbar";
 import HomePage from "./pages/HomePage";
@@ -66,7 +67,7 @@ function App() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/user/me");
+        const res = await axios.get(`${API_BASE_URL}/user/me`);
         setUser(res.data);
       } catch (err) {
         setUser(null);

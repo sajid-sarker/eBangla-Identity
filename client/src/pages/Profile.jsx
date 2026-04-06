@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "../config/env";
 import { alpha } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
@@ -11,7 +12,6 @@ import UserInfoCard from "../components/dashboard/UserInfoCard";
 import RecordCard from "../components/dashboard/RecordCard";
 import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
 import LocalPoliceIcon from "@mui/icons-material/LocalPolice";
-import FamilyRestroomIcon from "@mui/icons-material/FamilyRestroom";
 import PaymentsIcon from "@mui/icons-material/Payments";
 import HomeWorkIcon from "@mui/icons-material/HomeWork"; 
 
@@ -26,11 +26,11 @@ export default function Profile({ user, setUser }) {
     const fetchDashboardData = async () => {
       try {
       
-        const statsRes = await axios.get("http://localhost:5000/api/stats/dashboard");
+        const statsRes = await axios.get(`${API_BASE_URL}/stats/dashboard`);
         setStats(statsRes.data);
 
         
-        const taxRes = await axios.get("http://localhost:5000/api/tax?year=2026");
+        const taxRes = await axios.get(`${API_BASE_URL}/tax?year=2026`);
         if (taxRes.data && taxRes.data.length > 0) {
         
           setLatestTax(taxRes.data[0]);
@@ -121,17 +121,6 @@ export default function Profile({ user, setUser }) {
                 />
               </Grid>
 
-              <Grid item xs={12} sm={6} md={4}>
-                <RecordCard
-                  title="Family Records"
-                  value={stats?.family ? `${stats.family.count} Members` : "0 Members"}
-                  icon={<FamilyRestroomIcon />}
-                  lastUpdated={formatDate(stats?.family?.lastUpdated)}
-                  color="success.main"
-                />
-              </Grid>
-
-              {/* NEW: Properties Card */}
               <Grid item xs={12} sm={6} md={4}>
                 <RecordCard
                   title="Property Records"

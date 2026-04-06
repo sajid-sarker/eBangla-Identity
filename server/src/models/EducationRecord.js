@@ -30,6 +30,16 @@ const educationRecordSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  document: {
+    data: Buffer,
+    contentType: String,
+    originalName: String,
+  },
+  status: {
+    type: String,
+    enum: ["Pending", "Verified", "Rejected"],
+    default: "Pending",
+  },
 }, { timestamps: true });
 
 const EducationRecord = mongoose.model(

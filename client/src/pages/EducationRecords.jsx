@@ -8,12 +8,16 @@ import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
 import axios from "axios";
+import { API_BASE_URL } from "../config/env";
 
+import Button from "@mui/material/Button";
 import SideMenu from "../components/SideMenu";
 import DetailedRecordCard from "../components/dashboard/DetailedRecordCard";
+import AddQualificationModal from "../components/education/AddQualificationModal";
 
 import SchoolIcon from "@mui/icons-material/School";
 import HistoryEduIcon from "@mui/icons-material/HistoryEdu";
+import AddIcon from "@mui/icons-material/Add";
 
 // Ensure cookies are sent for authentication
 axios.defaults.withCredentials = true;
@@ -22,11 +26,17 @@ const EducationRecords = ({ user }) => {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Modal state
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   const fetchEducationData = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:5000/api/education");
+      const res = await axios.get(`${API_BASE_URL}/education`);
       setRecords(res.data);
     } catch (err) {
       console.error("Error fetching education records:", err);
@@ -80,17 +90,27 @@ const EducationRecords = ({ user }) => {
               mt: { xs: 8, md: 2 },
             }}
           >
-            <Box>
-              <Typography
-                variant="h4"
-                sx={{ fontWeight: 700, color: "primary.main", mb: 1 }}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <Box>
+                <Typography
+                  variant="h4"
+                  sx={{ fontWeight: 700, color: "primary.main", mb: 1 }}
+                >
+                  Education History
+                </Typography>
+                <Typography variant="body1" color="text.secondary">
+                  Verified academic qualifications and certifications linked to
+                  your identity.
+                </Typography>
+              </Box>
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={handleOpen}
+                sx={{ borderRadius: 2, px: 3, py: 1 }}
               >
-                Education History
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                Verified academic qualifications and certifications linked to
-                your identity.
-              </Typography>
+                Add Qualification
+              </Button>
             </Box>
 
             {error && <Alert severity="error">{error}</Alert>}
@@ -112,13 +132,13 @@ const EducationRecords = ({ user }) => {
                       <DetailedRecordCard
                         title={record.qualification}
                         subtitle={record.institution}
-                        status="Verified"
-                        date={record.passingYear.toString()} // Passing year usually doesn't have a full date in this schema
+                        status={record.status}
+                        date={record.passingYear.toString()}
                         icon={<SchoolIcon />}
-                        color="primary"
+                        color={record.status === "Verified" ? "primary" : record.status === "Rejected" ? "error" : "warning"}
                         details={[
                           {
-                            label: "Degree / Variant",
+                            label: "Degree",
                             value: record.degreeName || "Not specified",
                           },
                           {
@@ -135,6 +155,11 @@ const EducationRecords = ({ user }) => {
           </Stack>
         </Box>
       </Box>
+      <AddQualificationModal
+        open={open}
+        onClose={handleClose}
+        onSuccess={fetchEducationData}
+      />
     </>
   );
 };

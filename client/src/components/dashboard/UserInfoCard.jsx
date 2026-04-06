@@ -21,7 +21,7 @@ import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import ProfileImageCropper from "./ProfileImageCropper";
 import { API_BASE_URL } from "../../config/env.js";
 
-export default function UserInfoCard({ user, setUser }) {
+export default function UserInfoCard({ user, setUser, setAvatarTimestamp }) {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -42,7 +42,8 @@ export default function UserInfoCard({ user, setUser }) {
   // Profile picture state
   const [cropperOpen, setCropperOpen] = useState(false);
   const [rawImageSrc, setRawImageSrc] = useState(null);
-  const [avatarTimestamp, setAvatarTimestamp] = useState(Date.now());
+  const [pendingPicture, setPendingPicture] = useState(null); // { blob, previewUrl }
+  const [avatarTimestamp, setAvatarTimestamp_local] = useState(Date.now());
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -82,13 +83,39 @@ export default function UserInfoCard({ user, setUser }) {
 
   const handleSave = async () => {
     try {
+      // Upload pending picture first (if user selected one)
+      if (pendingPicture) {
+        const formDataImg = new FormData();
+        formDataImg.append("profilePicture", pendingPicture.blob, "profile.jpg");
+        await axios.post(`${API_BASE_URL}/user/profile-picture`, formDataImg, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        // Revoke the local preview URL to free memory
+        URL.revokeObjectURL(pendingPicture.previewUrl);
+        setPendingPicture(null);
+        // Bust cache for Navbar and local Avatar
+        const newTimestamp = Date.now();
+        setAvatarTimestamp(newTimestamp);
+        setAvatarTimestamp_local(newTimestamp);
+      }
+
+      // Save profile data
       const res = await axios.put(`${API_BASE_URL}/auth/profile`, formData);
       if (setUser) setUser(res.data);
       setIsEditing(false);
     } catch (err) {
-      console.error("Error updating profile:", err);
-      alert(err.response?.data?.message || "Failed to update profile");
+      console.error("Error saving profile:", err);
+      alert(err.response?.data?.message || "Failed to save profile");
     }
+  };
+
+  const handleCancel = () => {
+    // Discard any pending picture without uploading
+    if (pendingPicture) {
+      URL.revokeObjectURL(pendingPicture.previewUrl);
+      setPendingPicture(null);
+    }
+    setIsEditing(false);
   };
 
   // --- Profile Picture Handlers ---
@@ -123,7 +150,7 @@ export default function UserInfoCard({ user, setUser }) {
     e.target.value = "";
   };
 
-  const handleCropComplete = async (croppedBlob) => {
+  const handleCropComplete = (croppedBlob) => {
     setCropperOpen(false);
     setRawImageSrc(null);
 
@@ -132,18 +159,9 @@ export default function UserInfoCard({ user, setUser }) {
       return;
     }
 
-    try {
-      const formDataImg = new FormData();
-      formDataImg.append("profilePicture", croppedBlob, "profile.jpg");
-      await axios.post(`${API_BASE_URL}/user/profile-picture`, formDataImg, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      // Bust the avatar cache so it reloads immediately
-      setAvatarTimestamp(Date.now());
-    } catch (err) {
-      console.error("Error uploading profile picture:", err);
-      alert(err.response?.data?.message || "Failed to upload profile picture");
-    }
+    // Store the blob locally and create a preview URL — no upload yet
+    const previewUrl = URL.createObjectURL(croppedBlob);
+    setPendingPicture({ blob: croppedBlob, previewUrl });
   };
 
   const displayUser = user || {
@@ -156,9 +174,10 @@ export default function UserInfoCard({ user, setUser }) {
     yearlyIncome: 0,
   };
 
-  const avatarSrc = user?._id
-    ? `${API_BASE_URL}/user/profile-picture/${user._id}?t=${avatarTimestamp}`
-    : undefined;
+  // Show local preview if user picked a new picture but hasn't saved yet;
+  // otherwise show the server-stored picture with cache-busting timestamp
+  const avatarSrc = pendingPicture?.previewUrl
+    ?? (user?._id ? `${API_BASE_URL}/user/profile-picture/${user._id}?t=${avatarTimestamp}` : undefined);
 
   return (
     <Card variant="outlined" sx={{ width: "100%", mb: 2 }}>
@@ -272,7 +291,7 @@ export default function UserInfoCard({ user, setUser }) {
                 <Button
                   startIcon={<CancelIcon />}
                   variant="outlined"
-                  onClick={() => setIsEditing(false)}
+                  onClick={handleCancel}
                   size="small"
                   color="inherit"
                 >

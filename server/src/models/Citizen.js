@@ -64,11 +64,6 @@ const citizenSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
-    driving_license: {
-      type: String,
-      required: false,
-      default: null,
-    },
     yearlyIncome: {
       type: Number,
       required: false,

@@ -27,7 +27,7 @@ const settings = [
   { name: "Logout", path: "/logout " },
 ];
 
-export default function Navbar({ user, setUser }) {
+export default function Navbar({ user, setUser, avatarTimestamp }) {
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const navigate = useNavigate();
@@ -157,7 +157,10 @@ export default function Navbar({ user, setUser }) {
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt={user.name} src="/static/images/avatar/2.jpg" />
+                  <Avatar
+                    alt={user.name}
+                    src={user._id ? `${API_BASE_URL}/user/profile-picture/${user._id}?t=${avatarTimestamp}` : undefined}
+                  />
                 </IconButton>
               </Tooltip>
               <Menu

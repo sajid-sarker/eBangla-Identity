@@ -63,6 +63,7 @@ const theme = createTheme({
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [avatarTimestamp, setAvatarTimestamp] = useState(Date.now());
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -82,7 +83,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <div className="app-container">
-        <Navbar user={user} setUser={setUser} />
+        <Navbar user={user} setUser={setUser} avatarTimestamp={avatarTimestamp} />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login setUser={setUser} />} />
@@ -96,7 +97,7 @@ function App() {
                 loading={loading}
                 requireCompleteProfile={false}
               >
-                <Profile user={user} setUser={setUser} />
+                <Profile user={user} setUser={setUser} setAvatarTimestamp={setAvatarTimestamp} />
               </ProtectedRoute>
             }
           />

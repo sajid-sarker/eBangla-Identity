@@ -15,7 +15,7 @@ import LocalPoliceIcon from "@mui/icons-material/LocalPolice";
 import PaymentsIcon from "@mui/icons-material/Payments";
 import HomeWorkIcon from "@mui/icons-material/HomeWork"; 
 
-export default function Profile({ user, setUser }) {
+export default function Profile({ user, setUser, setAvatarTimestamp }) {
   const [stats, setStats] = useState(null);
   const [latestTax, setLatestTax] = useState(null);
 
@@ -98,7 +98,7 @@ export default function Profile({ user, setUser }) {
               My Profile
             </Typography>
 
-            <UserInfoCard user={user} setUser={setUser} />
+            <UserInfoCard user={user} setUser={setUser} setAvatarTimestamp={setAvatarTimestamp} />
 
             <Grid container spacing={3}>
               <Grid item xs={12} sm={6} md={4}>
@@ -137,13 +137,13 @@ export default function Profile({ user, setUser }) {
                   title="Tax Summary"
                   value={
                     latestTax 
-                      ? ` ${latestTax.taxAmount.toLocaleString()} Tax` 
-                      : " 0 Calculated"
+                      ? `${latestTax.taxAmount.toLocaleString()} Tax` 
+                      : "0 Calculated"
                   }
                   icon={<PaymentsIcon />}
                   lastUpdated={
                     latestTax 
-                      ? `Last updated: ${new Date(latestTax.updatedAt).getFullYear()}` 
+                      ? `${new Date(latestTax.updatedAt).getFullYear()}` 
                       : "No submissions"
                   }
                   color="warning.main"

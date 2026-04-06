@@ -75,6 +75,10 @@ const citizenSchema = new mongoose.Schema(
       default: 0,
     },
     familyMembers: [familyMemberSchema],
+    profilePicture: {
+      data: { type: Buffer, required: false },
+      contentType: { type: String, required: false },
+    },
   },
   {
     timestamps: true,

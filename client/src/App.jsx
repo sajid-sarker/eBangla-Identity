@@ -15,7 +15,8 @@ import PoliceRecords from "./pages/PoliceRecords";
 import TaxRecords from "./pages/TaxRecords";
 import EducationRecords from "./pages/EducationRecords";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import { AdminMedical, AdminPolice, AdminTax } from "./pages/admin/AdminModules";
+import { AdminMedical, AdminPolice } from "./pages/admin/AdminModules"; // Removed AdminTax from here
+import AdminTax from "./pages/admin/AdminTax"; // Imported as a standalone file
 import AdminEducation from "./pages/admin/AdminEducation";
 import { AdminProvider } from "./context/AdminContext";
 
@@ -30,7 +31,7 @@ const ProtectedRoute = ({
   requireAdmin = false,
   allowedAdminRoles = [],
 }) => {
-  if (loading) return null; // Or a loading spinner
+  if (loading) return null; 
 
   if (!user) {
     return <Navigate to="/login" replace />;

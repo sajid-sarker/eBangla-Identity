@@ -34,4 +34,3 @@ const AdminPageTemplate = ({ title, user }) => (
 export const AdminMedical = ({ user }) => <AdminPageTemplate title="Medical Records Management" user={user} />;
 export const AdminPolice = ({ user }) => <AdminPageTemplate title="Police Records Management" user={user} />;
 export const AdminTax = ({ user }) => <AdminPageTemplate title="Tax Records Management" user={user} />;
-export const AdminEducation = ({ user }) => <AdminPageTemplate title="Education Records Management" user={user} />;

@@ -14,7 +14,7 @@ import HelpRoundedIcon from "@mui/icons-material/HelpRounded";
 import { useNavigate } from "react-router-dom";
 
 const mainListItems = [
-  { text: "Home", icon: <HomeRoundedIcon />, path: "/" },
+  // { text: "Home", icon: <HomeRoundedIcon />, path: "/" },
   { text: "Profile", icon: <PeopleRoundedIcon />, path: "/profile" },
   { text: "Medical", icon: <AssignmentRoundedIcon />, path: "/medical" },
   { text: "Police", icon: <AssignmentRoundedIcon />, path: "/police" },

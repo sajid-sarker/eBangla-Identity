@@ -120,6 +120,9 @@ export default function Login({ setUser }) {
       const userData = response.data.data.user;
       if (setUser) setUser(userData);
 
+      // Clear any previously selected citizen on login
+      sessionStorage.removeItem("adminSelectedCitizen");
+
       // Redirect based on role and profile completion status
       if (userData.isAdmin) {
         navigate("/admin/dashboard");

@@ -6,7 +6,6 @@ import Divider from "@mui/material/Divider";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import MenuContent from "./dashboard/MenuContent";
-import OptionsMenu from "./dashboard/OptionsMenu";
 
 const drawerWidth = 240;
 
@@ -80,7 +79,6 @@ export default function SideMenu({ user }) {
             {displayEmail}
           </Typography>
         </Box>
-        <OptionsMenu />
       </Stack>
     </Drawer>
   );

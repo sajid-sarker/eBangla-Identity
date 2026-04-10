@@ -119,3 +119,21 @@ export const updateProfile = async (req, res) => {
     res.status(500).json({ message: "Server Error" });
   }
 };
+
+// @desc    Get citizen by NID (Admin Only)
+// @route   GET /api/user/admin/citizen/:nid
+// @access  Private/Admin
+export const getCitizenByNid = async (req, res) => {
+  try {
+    const citizen = await Citizen.findOne({ nid: req.params.nid }).select("-password");
+
+    if (!citizen) {
+      return res.status(404).json({ message: "Citizen not found with this NID" });
+    }
+
+    res.status(200).json(citizen);
+  } catch (error) {
+    console.error("Error fetching citizen by NID:", error);
+    res.status(500).json({ message: "Server error while fetching citizen" });
+  }
+};

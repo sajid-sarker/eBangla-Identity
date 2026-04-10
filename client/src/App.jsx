@@ -14,6 +14,8 @@ import MedicalRecords from "./pages/MedicalRecords";
 import PoliceRecords from "./pages/PoliceRecords";
 import TaxRecords from "./pages/TaxRecords";
 import EducationRecords from "./pages/EducationRecords";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import { AdminMedical, AdminPolice, AdminTax, AdminEducation } from "./pages/admin/AdminModules";
 
 // Configure axios defaults
 axios.defaults.withCredentials = true;
@@ -23,6 +25,7 @@ const ProtectedRoute = ({
   user,
   loading,
   requireCompleteProfile = true,
+  requireAdmin = false,
 }) => {
   if (loading) return null; // Or a loading spinner
 
@@ -30,7 +33,11 @@ const ProtectedRoute = ({
     return <Navigate to="/login" replace />;
   }
 
-  if (requireCompleteProfile && !user.isProfileComplete) {
+  if (requireAdmin && !user.isAdmin) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (!user.isAdmin && requireCompleteProfile && !user.isProfileComplete) {
     return <Navigate to="/profile" replace />;
   }
 
@@ -141,6 +148,48 @@ function App() {
             element={
               <ProtectedRoute user={user} loading={loading}>
                 <Navigate to="/profile" replace />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Admin Routes */}
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedRoute user={user} loading={loading} requireAdmin={true}>
+                <AdminDashboard user={user} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/medical"
+            element={
+              <ProtectedRoute user={user} loading={loading} requireAdmin={true}>
+                <AdminMedical user={user} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/police"
+            element={
+              <ProtectedRoute user={user} loading={loading} requireAdmin={true}>
+                <AdminPolice user={user} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/tax"
+            element={
+              <ProtectedRoute user={user} loading={loading} requireAdmin={true}>
+                <AdminTax user={user} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/education"
+            element={
+              <ProtectedRoute user={user} loading={loading} requireAdmin={true}>
+                <AdminEducation user={user} />
               </ProtectedRoute>
             }
           />

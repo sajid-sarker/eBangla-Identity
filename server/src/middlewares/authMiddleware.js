@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import Citizen from "../models/Citizen.js";
+import Admin from "../models/Admin.js";
 import { JWT_SECRET } from "../config/env.js";
 
 export const protect = async (req, res, next) => {
@@ -29,7 +30,13 @@ export const protect = async (req, res, next) => {
       const decoded = jwt.verify(token, JWT_SECRET);
 
       // Attach user to request, exclude password
-      req.user = await Citizen.findById(decoded.id).select("-password");
+      if (decoded.role === "admin") {
+        req.user = await Admin.findById(decoded.id).select("-password");
+        if (req.user) req.user.isAdmin = true;
+      } else {
+        req.user = await Citizen.findById(decoded.id).select("-password");
+        if (req.user) req.user.isAdmin = false;
+      }
 
       if (!req.user) {
         return res

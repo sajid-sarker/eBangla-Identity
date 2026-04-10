@@ -1,6 +1,7 @@
 import { JWT_SECRET, JWT_EXPIRES_IN, NODE_ENV } from "../config/env.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import { updateTaxRecord } from "./taxController.js";
 import Citizen from "../models/Citizen.js";
 

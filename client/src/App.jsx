@@ -14,6 +14,9 @@ import MedicalRecords from "./pages/MedicalRecords";
 import PoliceRecords from "./pages/PoliceRecords";
 import TaxRecords from "./pages/TaxRecords";
 import EducationRecords from "./pages/EducationRecords";
+import Report from "./pages/ReportPage";
+import ScorePage from "./pages/ScorePage";
+
 
 // Configure axios defaults
 axios.defaults.withCredentials = true;
@@ -144,6 +147,25 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route 
+            path="/score" 
+            element={
+               <ProtectedRoute user={user} loading={loading}>
+                  <ScorePage user={user} />
+               </ProtectedRoute>
+            } 
+            
+          />
+          <Route 
+            path="/report" 
+            element={
+               <ProtectedRoute user={user} loading={loading}>
+                  <Report user={user} />
+               </ProtectedRoute>
+            } 
+            
+          />
+            
 
           {/* Fallback route */}
           <Route path="*" element={<Navigate to="/" replace />} />

@@ -4,8 +4,10 @@ import {
   getEducationRecords,
   uploadEducationDocument,
   getEducationDocument,
+  updateEducationStatus,
+  updateEducationRecord,
 } from "../controllers/educationController.js";
-import { protect } from "../middlewares/authMiddleware.js";
+import { protect, adminOnly } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -34,8 +36,12 @@ router.use(protect);
 
 router.get("/", getEducationRecords);
 
-// Document upload and retrieval
+// Document upload, update, and retrieval
 router.post("/document", upload.single("document"), uploadEducationDocument);
+router.put("/:id", upload.single("document"), updateEducationRecord);
 router.get("/:id/document", getEducationDocument);
+
+// Admin routes
+router.patch("/admin/:id/status", adminOnly, updateEducationStatus);
 
 export default router;

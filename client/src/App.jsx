@@ -15,7 +15,9 @@ import PoliceRecords from "./pages/PoliceRecords";
 import TaxRecords from "./pages/TaxRecords";
 import EducationRecords from "./pages/EducationRecords";
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import { AdminMedical, AdminPolice, AdminTax, AdminEducation } from "./pages/admin/AdminModules";
+import { AdminMedical, AdminPolice, AdminTax } from "./pages/admin/AdminModules";
+import AdminEducation from "./pages/admin/AdminEducation";
+import { AdminProvider } from "./context/AdminContext";
 
 // Configure axios defaults
 axios.defaults.withCredentials = true;
@@ -26,6 +28,7 @@ const ProtectedRoute = ({
   loading,
   requireCompleteProfile = true,
   requireAdmin = false,
+  allowedAdminRoles = [],
 }) => {
   if (loading) return null; // Or a loading spinner
 
@@ -33,8 +36,14 @@ const ProtectedRoute = ({
     return <Navigate to="/login" replace />;
   }
 
-  if (requireAdmin && !user.isAdmin) {
-    return <Navigate to="/" replace />;
+  if (requireAdmin) {
+    if (!user.isAdmin) {
+      return <Navigate to="/" replace />;
+    }
+    // Strict RBAC: Check if the admin's role is allowed for this route
+    if (allowedAdminRoles.length > 0 && !allowedAdminRoles.includes(user.role)) {
+      return <Navigate to="/admin/dashboard" replace />;
+    }
   }
 
   if (!user.isAdmin && requireCompleteProfile && !user.isProfileComplete) {
@@ -154,43 +163,52 @@ function App() {
 
           {/* Admin Routes */}
           <Route
-            path="/admin/dashboard"
+            path="/admin/*"
             element={
-              <ProtectedRoute user={user} loading={loading} requireAdmin={true}>
-                <AdminDashboard user={user} />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/medical"
-            element={
-              <ProtectedRoute user={user} loading={loading} requireAdmin={true}>
-                <AdminMedical user={user} />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/police"
-            element={
-              <ProtectedRoute user={user} loading={loading} requireAdmin={true}>
-                <AdminPolice user={user} />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/tax"
-            element={
-              <ProtectedRoute user={user} loading={loading} requireAdmin={true}>
-                <AdminTax user={user} />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/education"
-            element={
-              <ProtectedRoute user={user} loading={loading} requireAdmin={true}>
-                <AdminEducation user={user} />
-              </ProtectedRoute>
+              <AdminProvider>
+                <Routes>
+                  <Route
+                    path="dashboard"
+                    element={
+                      <ProtectedRoute user={user} loading={loading} requireAdmin={true}>
+                        <AdminDashboard user={user} />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="medical"
+                    element={
+                      <ProtectedRoute user={user} loading={loading} requireAdmin={true} allowedAdminRoles={["medical", "superuser"]}>
+                        <AdminMedical user={user} />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="police"
+                    element={
+                      <ProtectedRoute user={user} loading={loading} requireAdmin={true} allowedAdminRoles={["police", "superuser"]}>
+                        <AdminPolice user={user} />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="tax"
+                    element={
+                      <ProtectedRoute user={user} loading={loading} requireAdmin={true} allowedAdminRoles={["general", "superuser"]}>
+                        <AdminTax user={user} />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="education"
+                    element={
+                      <ProtectedRoute user={user} loading={loading} requireAdmin={true} allowedAdminRoles={["general", "superuser"]}>
+                        <AdminEducation user={user} />
+                      </ProtectedRoute>
+                    }
+                  />
+                </Routes>
+              </AdminProvider>
             }
           />
 

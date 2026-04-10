@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "../../config/env";
 
@@ -20,7 +20,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import AddIcon from "@mui/icons-material/Add";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 
-const AddQualificationModal = ({ open, onClose, onSuccess }) => {
+const AddQualificationModal = ({ open, onClose, onSuccess, editData, citizenId }) => {
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     qualification: "",
@@ -41,6 +41,24 @@ const AddQualificationModal = ({ open, onClose, onSuccess }) => {
     setFile(null);
     setUploadError(null);
   };
+
+  useEffect(() => {
+    if (open) {
+      if (editData) {
+        setFormData({
+          qualification: editData.qualification || "",
+          degreeName: editData.degreeName || "",
+          institution: editData.institution || "",
+          passingYear: editData.passingYear || new Date().getFullYear(),
+        });
+        setFile(null);
+        setUploadError(null);
+      } else {
+        resetForm();
+      }
+    }
+  }, [editData, open]);
+
 
   const handleInternalClose = () => {
     if (!submitting) {
@@ -66,7 +84,7 @@ const AddQualificationModal = ({ open, onClose, onSuccess }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!file) {
+    if (!file && !editData) {
       setUploadError("Please upload a supporting document (PDF or Image)");
       return;
     }
@@ -77,15 +95,27 @@ const AddQualificationModal = ({ open, onClose, onSuccess }) => {
     data.append("degreeName", formData.degreeName);
     data.append("institution", formData.institution);
     data.append("passingYear", formData.passingYear);
-    data.append("document", file);
+    if (file) {
+      data.append("document", file);
+    }
+    if (citizenId && !editData) {
+      data.append("citizenId", citizenId);
+    }
 
     try {
-      await axios.post(`${API_BASE_URL}/education/document`, data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      if (editData) {
+        await axios.put(`${API_BASE_URL}/education/${editData._id}`, data, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      } else {
+        await axios.post(`${API_BASE_URL}/education/document`, data, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      }
       resetForm();
       onClose();
       if (onSuccess) onSuccess();
+
     } catch (err) {
       console.error("Error submitting qualification:", err);
       setUploadError(
@@ -99,7 +129,9 @@ const AddQualificationModal = ({ open, onClose, onSuccess }) => {
   return (
     <Dialog open={open} onClose={handleInternalClose} maxWidth="sm" fullWidth>
       <form onSubmit={handleSubmit}>
-        <DialogTitle sx={{ fontWeight: 700 }}>Add New Qualification</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 700 }}>
+          {editData ? "Edit Qualification" : "Add New Qualification"}
+        </DialogTitle>
         <DialogContent dividers>
           <Stack spacing={3} sx={{ mt: 1 }}>
             <FormControl fullWidth required>
@@ -155,7 +187,7 @@ const AddQualificationModal = ({ open, onClose, onSuccess }) => {
                 gutterBottom
                 sx={{ fontWeight: 600 }}
               >
-                Supporting Document (PDF/JPG/PNG, Max 1MB)
+                Supporting Document (PDF/JPG/PNG, Max 1MB) {editData ? "(Optional)" : ""}
               </Typography>
               <Button
                 component="label"
@@ -164,7 +196,7 @@ const AddQualificationModal = ({ open, onClose, onSuccess }) => {
                 fullWidth
                 sx={{ py: 1.5, borderStyle: "dashed" }}
               >
-                {file ? file.name : "Upload Certificate"}
+                {file ? file.name : editData ? "Replace Current Certificate" : "Upload Certificate"}
                 <input
                   type="file"
                   hidden
@@ -194,7 +226,7 @@ const AddQualificationModal = ({ open, onClose, onSuccess }) => {
             disabled={submitting}
             sx={{ px: 4 }}
           >
-            {submitting ? <CircularProgress size={24} /> : "Submit"}
+            {submitting ? <CircularProgress size={24} /> : editData ? "Save Changes" : "Submit"}
           </Button>
         </DialogActions>
       </form>

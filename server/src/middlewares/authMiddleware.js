@@ -53,3 +53,11 @@ export const protect = async (req, res, next) => {
     res.status(500).json({ message: "Server error in auth middleware" });
   }
 };
+
+export const adminOnly = (req, res, next) => {
+  if (req.user && req.user.isAdmin) {
+    next();
+  } else {
+    res.status(403).json({ message: "Not authorized as an admin" });
+  }
+};

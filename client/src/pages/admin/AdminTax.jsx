@@ -30,6 +30,7 @@ export default function AdminTax({ user }) {
   // Generate Year List (2000 - 2026)
   const years = Array.from({ length: 27 }, (_, i) => (2026 - i).toString());
 
+  // Note: Cumulative stats are still calculated in useMemo for your logic
   const stats = useMemo(() => {
     const totalInc = records.reduce((sum, rec) => sum + (rec.totalIncome || 0), 0);
     const totalProp = selectedCitizen?.propertyValue || 0; 
@@ -79,15 +80,12 @@ export default function AdminTax({ user }) {
 
     setActionLoading(true);
     try {
-      // FIX: Changed from /user/admin/ to /tax/admin/ to match your taxRoutes.js
       await axios.patch(`${API_BASE_URL}/tax/admin/update-citizen/${selectedCitizen._id}`, financials);
-      
       setSnackbar({ open: true, message: "Annual income set and tax calculated!", severity: "success" });
       setOpenModal(false);
-      setFinancials({ ...financials, annualIncome: "" }); // Reset input
-      fetchRecords(); // Refresh the table to show the new record
+      setFinancials({ ...financials, annualIncome: "" }); 
+      fetchRecords(); 
     } catch (err) {
-      console.error("Update Error:", err);
       setSnackbar({ open: true, message: err.response?.data?.message || "Failed to update income", severity: "error" });
     } finally {
       setActionLoading(false);
@@ -117,26 +115,25 @@ export default function AdminTax({ user }) {
                   <Typography variant="body2" sx={{ opacity: 0.8 }}>NID: {selectedCitizen.nid}</Typography>
                 </Grid>
                 
+                {/* Column 2: Modified Annual Income Section */}
                 <Grid item xs={12} md={4} sx={{ textAlign: 'center' }}>
-                  <Typography variant="caption" sx={{ opacity: 0.7, display: 'block', mb: 0.5 }}>ANNUAL INCOME</Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, mb: 1.5 }}>৳ {stats.totalInc.toLocaleString()}</Typography>
+                  <Typography variant="caption" sx={{ opacity: 0.7, display: 'block', mb: 1.5 }}>ANNUAL INCOME MANAGEMENT</Typography>
                   <Button 
                     variant="outlined" 
-                    size="small"
+                    size="medium"
                     onClick={() => setOpenModal(true)}
-                    sx={{ color: "white", borderColor: "rgba(255,255,255,0.4)", textTransform: 'none', px: 4, "&:hover": { borderColor: "white", bgcolor: "rgba(255,255,255,0.1)" } }}
+                    sx={{ color: "white", borderColor: "rgba(255,255,255,0.4)", textTransform: 'none', px: 4, fontWeight: 600, "&:hover": { borderColor: "white", bgcolor: "rgba(255,255,255,0.1)" } }}
                   >
                     Set Income
                   </Button>
                 </Grid>
 
                 <Grid item xs={12} md={4} sx={{ textAlign: 'right' }}>
-                  <Typography variant="caption" sx={{ opacity: 0.7, display: 'block', mb: 0.5 }}>PROPERTY VALUE</Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 700, mb: 1.5 }}>৳ {stats.totalProp.toLocaleString()}</Typography>
+                  <Typography variant="caption" sx={{ opacity: 0.7, display: 'block', mb: 1.5 }}>PROPERTY VALUE MANAGEMENT</Typography>
                   <Button 
                     variant="outlined" 
-                    size="small"
-                    sx={{ color: "white", borderColor: "rgba(255,255,255,0.4)", textTransform: 'none', px: 4, "&:hover": { borderColor: "white", bgcolor: "rgba(255,255,255,0.1)" } }}
+                    size="medium"
+                    sx={{ color: "white", borderColor: "rgba(255,255,255,0.4)", textTransform: 'none', px: 4, fontWeight: 600, "&:hover": { borderColor: "white", bgcolor: "rgba(255,255,255,0.1)" } }}
                   >
                     View Properties
                   </Button>
@@ -196,7 +193,6 @@ export default function AdminTax({ user }) {
         <DialogTitle sx={{ fontWeight: 700, color: "primary.main" }}>Update Annual Income</DialogTitle>
         <DialogContent>
           <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', gap: 3, minWidth: '350px' }}>
-            
             <TextField
               select
               label="Select Year"

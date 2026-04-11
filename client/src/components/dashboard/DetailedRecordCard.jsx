@@ -18,8 +18,10 @@ const getStatusColor = (status) => {
     case "closed":
     case "mild":
     case "convicted":
+    case "verified":
       return "success";
     case "severe":
+    case "rejected":
       return "error";
     case "pending":
       return "info";

@@ -2,11 +2,12 @@ import { JWT_SECRET, JWT_EXPIRES_IN, NODE_ENV } from "../config/env.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-import { updateTaxRecord } from "./taxController.js";
-import Citizen from "../models/Citizen.js";
 
-const generateTokenAndSetCookie = (res, citizenId) => {
-  const token = jwt.sign({ id: citizenId }, JWT_SECRET, {
+import Citizen from "../models/Citizen.js";
+import Admin from "../models/Admin.js";
+
+const generateTokenAndSetCookie = (res, userId, role = "citizen") => {
+  const token = jwt.sign({ id: userId, role }, JWT_SECRET, {
     expiresIn: JWT_EXPIRES_IN,
   });
   const maxAge = parseInt(JWT_EXPIRES_IN) * 60 * 1000;
@@ -58,7 +59,7 @@ export const register = async (req, res) => {
     );
 
     if (citizen) {
-      const token = generateTokenAndSetCookie(res, citizen[0]._id);
+      const token = generateTokenAndSetCookie(res, citizen[0]._id, "citizen");
 
       res.status(201).json({
         success: true,
@@ -83,23 +84,41 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const citizen = await Citizen.findOne({ email });
+    if (!email || !password)
+      return res.status(400).json({ message: "Missing fields" });
 
-    if (!citizen) {
-      return res.status(404).json({ message: "Citizen not found" });
+    let user = await Citizen.findOne({ email });
+    let isAdmin = false;
+
+    if (!user) {
+      user = await Admin.findOne({ email });
+      if (user) {
+        isAdmin = true;
+      }
     }
 
-    const isPasswordValid = await bcrypt.compare(password, citizen.password);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (isPasswordValid) {
-      const token = generateTokenAndSetCookie(res, citizen._id);
+      const token = generateTokenAndSetCookie(
+        res,
+        user._id,
+        isAdmin ? "admin" : "citizen",
+      );
 
       res.status(200).json({
         success: true,
         message: "Login successful",
         data: {
           token,
-          user: citizen,
+          user: {
+            ...user.toObject(),
+            isAdmin,
+          },
         },
       });
     } else {
@@ -114,53 +133,4 @@ export const login = async (req, res) => {
 export const logout = (req, res) => {
   res.cookie("jwt", "", { httpOnly: true, expires: new Date(0) });
   res.status(200).json({ message: "Logged out" });
-};
-
-export const updateProfile = async (req, res) => {
-  try {
-    const citizen = await Citizen.findById(req.user._id);
-    if (!citizen) return res.status(404).json({ message: "Citizen not found" });
-
-    citizen.name = req.body.name || citizen.name;
-    citizen.nid = req.body.nid || citizen.nid;
-    citizen.dateOfBirth = req.body.dateOfBirth || citizen.dateOfBirth;
-    citizen.gender = req.body.gender || citizen.gender;
-    citizen.phone = req.body.phone || citizen.phone;
-    citizen.maritalStatus = req.body.maritalStatus || citizen.maritalStatus;
-
-    if (req.body.address) {
-      citizen.address = {
-        division: req.body.address.division || citizen.address?.division,
-        district: req.body.address.district || citizen.address?.district,
-        upazilla: req.body.address.upazilla || citizen.address?.upazilla,
-        village: req.body.address.village || citizen.address?.village,
-      };
-    }
-
-    if (req.body.yearlyIncome !== undefined) {
-      citizen.yearlyIncome = Number(req.body.yearlyIncome);
-
-      await updateTaxRecord(citizen._id, citizen.yearlyIncome);
-    }
-
-    const updatedCitizen = await citizen.save();
-
-    res.status(200).json({
-      _id: updatedCitizen._id,
-      name: updatedCitizen.name,
-      email: updatedCitizen.email,
-      nid: updatedCitizen.nid,
-      dateOfBirth: updatedCitizen.dateOfBirth,
-      gender: updatedCitizen.gender,
-      phone: updatedCitizen.phone,
-      maritalStatus: updatedCitizen.maritalStatus,
-      yearlyIncome: updatedCitizen.yearlyIncome,
-      address: updatedCitizen.address,
-      isProfileComplete: updatedCitizen.isProfileComplete,
-      message: "Profile updated successfully",
-    });
-  } catch (error) {
-    console.error("Profile Update Error:", error);
-    res.status(500).json({ message: "Server Error" });
-  }
 };

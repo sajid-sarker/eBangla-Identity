@@ -1,7 +1,7 @@
 import express from "express";
 import multer from "multer";
-import { getMe, uploadProfilePicture, getProfilePicture } from "../controllers/userController.js";
-import { protect } from "../middlewares/authMiddleware.js";
+import { getMe, uploadProfilePicture, getProfilePicture, updateProfile, getCitizenByNid } from "../controllers/userController.js";
+import { protect, adminOnly } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -28,6 +28,10 @@ const upload = multer({
 // Protected routes
 router.get("/me", protect, getMe);
 router.post("/profile-picture", protect, upload.single("profilePicture"), uploadProfilePicture);
+router.put("/profile", protect, updateProfile);
+
+// Admin only routes
+router.get("/admin/citizen/:nid", protect, adminOnly, getCitizenByNid);
 
 // Public route - for serving avatar images anywhere in the app
 router.get("/profile-picture/:id", getProfilePicture);

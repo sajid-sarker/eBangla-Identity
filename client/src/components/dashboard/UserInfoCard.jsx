@@ -100,7 +100,7 @@ export default function UserInfoCard({ user, setUser, setAvatarTimestamp }) {
       }
 
       // Save profile data
-      const res = await axios.put(`${API_BASE_URL}/auth/profile`, formData);
+      const res = await axios.put(`${API_BASE_URL}/user/profile`, formData);
       if (setUser) setUser(res.data);
       setIsEditing(false);
     } catch (err) {

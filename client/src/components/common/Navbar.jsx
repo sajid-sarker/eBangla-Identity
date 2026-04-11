@@ -51,6 +51,8 @@ export default function Navbar({ user, setUser, avatarTimestamp }) {
     try {
       await axios.post(`${API_BASE_URL}/auth/logout`);
       if (setUser) setUser(null);
+      // Clear admin search selection on logout
+      sessionStorage.removeItem("adminSelectedCitizen");
       handleCloseUserMenu();
       navigate("/login");
     } catch (err) {

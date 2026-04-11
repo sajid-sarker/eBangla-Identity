@@ -14,7 +14,7 @@ import HelpRoundedIcon from "@mui/icons-material/HelpRounded";
 import { useNavigate } from "react-router-dom";
 
 const mainListItems = [
-  { text: "Home", icon: <HomeRoundedIcon />, path: "/" },
+  // { text: "Home", icon: <HomeRoundedIcon />, path: "/" },
   { text: "Profile", icon: <PeopleRoundedIcon />, path: "/profile" },
   { text: "Medical", icon: <AssignmentRoundedIcon />, path: "/medical" },
   { text: "Police", icon: <AssignmentRoundedIcon />, path: "/police" },
@@ -32,13 +32,46 @@ const secondaryListItems = [
 
 export default function MenuContent({ user }) {
   const navigate = useNavigate();
+  const isAdmin = user?.isAdmin;
+  const role = user?.role;
   const isProfileComplete = user?.isProfileComplete;
+
+  const getFilteredItems = () => {
+    if (!isAdmin) return mainListItems;
+
+    const items = [
+      { text: "Home", icon: <HomeRoundedIcon />, path: "/admin/dashboard" },
+    ];
+
+    if (role === "superuser") {
+      items.push(
+        { text: "Medical", icon: <AssignmentRoundedIcon />, path: "/admin/medical" },
+        { text: "Police", icon: <AssignmentRoundedIcon />, path: "/admin/police" },
+        { text: "Tax", icon: <AssignmentRoundedIcon />, path: "/admin/tax" },
+        { text: "Education", icon: <AssignmentRoundedIcon />, path: "/admin/education" }
+      );
+    } else if (role === "medical") {
+      items.push({ text: "Medical", icon: <AssignmentRoundedIcon />, path: "/admin/medical" });
+    } else if (role === "police") {
+      items.push({ text: "Police", icon: <AssignmentRoundedIcon />, path: "/admin/police" });
+    } else if (role === "general") {
+      items.push(
+        { text: "Tax", icon: <AssignmentRoundedIcon />, path: "/admin/tax" },
+        { text: "Education", icon: <AssignmentRoundedIcon />, path: "/admin/education" }
+      );
+    }
+
+    return items;
+  };
+
+  const menuItems = getFilteredItems();
 
   return (
     <Stack sx={{ flexGrow: 1, p: 1, justifyContent: "space-between" }}>
       <List dense>
-        {mainListItems.map((item, index) => {
+        {menuItems.map((item, index) => {
           const isDisabled =
+            !isAdmin &&
             !isProfileComplete &&
             (item.text === "Medical" ||
               item.text === "Police" ||

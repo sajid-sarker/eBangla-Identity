@@ -19,7 +19,6 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
-import GoogleIcon from "@mui/icons-material/Google";
 import { styled } from "@mui/material/styles";
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -105,7 +104,7 @@ export default function Login({ setUser }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!validateInputs()) return;
-    
+
     const data = new FormData(event.currentTarget);
     const email = data.get("email");
     const password = data.get("password");
@@ -114,22 +113,28 @@ export default function Login({ setUser }) {
       const response = await axios.post(
         `${API_BASE_URL}/auth/login`,
         { email, password },
-        { withCredentials: true }
+        { withCredentials: true },
       );
-      
+
       console.log("Login successful:", response.data);
       const userData = response.data.data.user;
       if (setUser) setUser(userData);
-      
-      // Redirect based on profile completion status
-      if (userData.isProfileComplete) {
+
+      // Clear any previously selected citizen on login
+      sessionStorage.removeItem("adminSelectedCitizen");
+
+      // Redirect based on role and profile completion status
+      if (userData.isAdmin) {
+        navigate("/admin/dashboard");
+      } else if (userData.isProfileComplete) {
         navigate("/dashboard");
       } else {
         navigate("/profile");
       }
     } catch (error) {
       console.error("Login failed:", error);
-      const errorMsg = error.response?.data?.message || "Login failed. Please try again.";
+      const errorMsg =
+        error.response?.data?.message || "Login failed. Please try again.";
       setPasswordError(true);
       setPasswordErrorMessage(errorMsg);
     }
@@ -248,15 +253,6 @@ export default function Login({ setUser }) {
           </Box>
           <Divider>or</Divider>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            {/* <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => alert("Sign in with Google")}
-              startIcon={<GoogleIcon />}
-            >
-              Sign in with Google
-            </Button>
-            */}
             <Typography sx={{ textAlign: "center" }}>
               Don&apos;t have an account?{" "}
               <Link

@@ -7,6 +7,8 @@ import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
+import Paper from "@mui/material/Paper";
 import axios from "axios";
 import { API_BASE_URL } from "../config/env";
 
@@ -18,6 +20,8 @@ import AddQualificationModal from "../components/education/AddQualificationModal
 import SchoolIcon from "@mui/icons-material/School";
 import HistoryEduIcon from "@mui/icons-material/HistoryEdu";
 import AddIcon from "@mui/icons-material/Add";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import EditIcon from "@mui/icons-material/Edit";
 
 // Ensure cookies are sent for authentication
 axios.defaults.withCredentials = true;
@@ -26,11 +30,16 @@ const EducationRecords = ({ user }) => {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "warning" });
   
   // Modal state
   const [open, setOpen] = useState(false);
+  const [editRecord, setEditRecord] = useState(null);
 
-  const handleOpen = () => setOpen(true);
+  const handleOpen = (record = null) => {
+    setEditRecord(record);
+    setOpen(true);
+  };
   const handleClose = () => setOpen(false);
 
   const fetchEducationData = async () => {
@@ -44,6 +53,18 @@ const EducationRecords = ({ user }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleViewDocument = (record) => {
+    if (!record.document || !record.document.originalName) {
+      setSnackbar({
+        open: true,
+        message: "No document has been uploaded for this qualification.",
+        severity: "warning",
+      });
+      return;
+    }
+    window.open(`${API_BASE_URL}/education/${record._id}/document`, "_blank");
   };
 
   useEffect(() => {
@@ -129,24 +150,57 @@ const EducationRecords = ({ user }) => {
                 <Grid container spacing={3}>
                   {records.map((record) => (
                     <Grid item xs={12} key={record._id}>
-                      <DetailedRecordCard
-                        title={record.qualification}
-                        subtitle={record.institution}
-                        status={record.status}
-                        date={record.passingYear.toString()}
-                        icon={<SchoolIcon />}
-                        color={record.status === "Verified" ? "primary" : record.status === "Rejected" ? "error" : "warning"}
-                        details={[
-                          {
-                            label: "Degree",
-                            value: record.degreeName || "Not specified",
-                          },
-                          {
-                            label: "Passing Year",
-                            value: record.passingYear,
-                          },
-                        ]}
-                      />
+                      <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                        <DetailedRecordCard
+                          title={record.qualification}
+                          subtitle={record.institution}
+                          status={record.status}
+                          date={record.passingYear.toString()}
+                          icon={<SchoolIcon />}
+                          color={record.status === "Verified" ? "primary" : record.status === "Rejected" ? "error" : "warning"}
+                          details={[
+                            {
+                              label: "Degree",
+                              value: record.degreeName || "Not specified",
+                            },
+                            {
+                              label: "Passing Year",
+                              value: record.passingYear,
+                            },
+                          ]}
+                        />
+                        <Paper
+                          variant="outlined"
+                          sx={{
+                            p: 1.5,
+                            borderRadius: 2,
+                            display: "flex",
+                            justifyContent: "center",
+                            gap: 2,
+                            bgcolor: "rgba(0,0,0,0.02)",
+                          }}
+                        >
+                          <Button
+                            size="small"
+                            startIcon={<VisibilityIcon />}
+                            onClick={() => handleViewDocument(record)}
+                            sx={{ fontWeight: 600 }}
+                          >
+                            View Document
+                          </Button>
+                          {record.status !== "Verified" && (
+                            <Button
+                              size="small"
+                              startIcon={<EditIcon />}
+                              onClick={() => handleOpen(record)}
+                              sx={{ fontWeight: 600 }}
+                              color="secondary"
+                            >
+                              Edit
+                            </Button>
+                          )}
+                        </Paper>
+                      </Box>
                     </Grid>
                   ))}
                 </Grid>
@@ -159,7 +213,22 @@ const EducationRecords = ({ user }) => {
         open={open}
         onClose={handleClose}
         onSuccess={fetchEducationData}
+        editData={editRecord}
       />
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setSnackbar({ ...snackbar, open: false })}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

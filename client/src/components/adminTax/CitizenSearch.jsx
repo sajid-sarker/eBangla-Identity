@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Box, TextField, Button, Paper, Typography, InputAdornment } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import axios from 'axios';
+import { API_BASE_URL } from '../../config/env';
 
 const CitizenSearch = ({ onSearchResults }) => {
   const [query, setQuery] = useState("");
@@ -11,7 +12,7 @@ const CitizenSearch = ({ onSearchResults }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:5000/api/users/citizens?search=${query}`);
+      const res = await axios.get(`${API_BASE_URL}/users/citizens?search=${query}`);
       onSearchResults(res.data);
     } catch (err) {
       console.error("Search failed:", err);

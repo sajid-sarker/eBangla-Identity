@@ -7,20 +7,29 @@ export const getCitizenScore = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    // Fetch actual DB records
-    const citizen = await Citizen.findById(userId);
+    // Fetch all records in parallel for better performance
+    const [citizen, medicalRecord, policeRecord, taxRecord] = await Promise.all(
+      [
+        Citizen.findById(userId).select("-profilePicture.data"),
+        MedicalRecord.findOne({ citizen: userId }),
+        PoliceRecord.findOne({ citizen: userId }),
+        TaxRecord.findOne({ user: userId }).sort({ createdAt: -1 }),
+      ],
+    );
+
     if (!citizen) {
-       return res.status(404).json({ message: "Citizen not found" });
+      return res.status(404).json({ message: "Citizen not found" });
     }
 
-    const medicalRecord = await MedicalRecord.findOne({ citizen: userId });
-    const policeRecord = await PoliceRecord.findOne({ citizen: userId });
-    const taxRecord = await TaxRecord.findOne({ user: userId }).sort({ createdAt: -1 });
-
     const TAX_THRESHOLD = 300000;
-    const isTaxApplicable = (citizen.yearlyIncome && citizen.yearlyIncome >= TAX_THRESHOLD) && citizen.profession !== "Student";
+    const isTaxApplicable =
+      citizen.yearlyIncome &&
+      citizen.yearlyIncome >= TAX_THRESHOLD &&
+      citizen.profession !== "Student";
 
-    const hasPoliceCase = policeRecord?.cases?.some((c) => ["pending", "under_investigation"].includes(c.status));
+    const hasPoliceCase = policeRecord?.cases?.some((c) =>
+      ["pending", "under_investigation"].includes(c.status),
+    );
     const isVerified = citizen.isProfileComplete; // or whatever verifies the profile
     const medicalCheckup = medicalRecord ? true : false; // simplistic check, based on whether they uploaded anything
     const taxPaid = taxRecord?.status === "Paid";
@@ -30,7 +39,8 @@ export const getCitizenScore = async (req, res) => {
     let breakdown = [];
 
     // ================= TAX =================
-    if (isTaxApplicable || taxPaid) { // even if under threshold, if they paid it counts
+    if (isTaxApplicable || taxPaid) {
+      // even if under threshold, if they paid it counts
       total += 20;
 
       if (taxPaid) {
@@ -70,10 +80,10 @@ export const getCitizenScore = async (req, res) => {
       breakdown.push("Medical inactive: 0/10");
     }
 
-    // 🔥 NEW: Normalized score
+    // 🔥 Normalized score
     let score = total > 0 ? Math.round((earned / total) * 100) : 0;
 
-    // Status (UNCHANGED logic)
+    // Status
     let status = "";
     if (score >= 80) status = "Excellent";
     else if (score >= 60) status = "Good";
@@ -88,8 +98,8 @@ export const getCitizenScore = async (req, res) => {
       earned,
       total,
     });
-
   } catch (error) {
+    console.error("Score calculation error:", error);
     res.status(500).json({ message: "Error calculating score" });
   }
 };

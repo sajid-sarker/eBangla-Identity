@@ -30,8 +30,12 @@ const EducationRecords = ({ user }) => {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "warning" });
-  
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "warning",
+  });
+
   // Modal state
   const [open, setOpen] = useState(false);
   const [editRecord, setEditRecord] = useState(null);
@@ -111,7 +115,13 @@ const EducationRecords = ({ user }) => {
               mt: { xs: 8, md: 2 },
             }}
           >
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+              }}
+            >
               <Box>
                 <Typography
                   variant="h4"
@@ -127,7 +137,7 @@ const EducationRecords = ({ user }) => {
               <Button
                 variant="contained"
                 startIcon={<AddIcon />}
-                onClick={handleOpen}
+                onClick={() => handleOpen(null)}
                 sx={{ borderRadius: 2, px: 3, py: 1 }}
               >
                 Add Qualification
@@ -150,14 +160,26 @@ const EducationRecords = ({ user }) => {
                 <Grid container spacing={3}>
                   {records.map((record) => (
                     <Grid item xs={12} key={record._id}>
-                      <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: 1,
+                        }}
+                      >
                         <DetailedRecordCard
                           title={record.qualification}
                           subtitle={record.institution}
                           status={record.status}
                           date={record.passingYear.toString()}
                           icon={<SchoolIcon />}
-                          color={record.status === "Verified" ? "primary" : record.status === "Rejected" ? "error" : "warning"}
+                          color={
+                            record.status === "Verified"
+                              ? "primary"
+                              : record.status === "Rejected"
+                                ? "error"
+                                : "warning"
+                          }
                           details={[
                             {
                               label: "Degree",

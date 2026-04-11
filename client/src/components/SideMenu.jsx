@@ -7,7 +7,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import MenuContent from "./dashboard/MenuContent";
 
-const drawerWidth = 240;
+const drawerWidth = 200;
 
 const Drawer = styled(MuiDrawer)({
   width: drawerWidth,

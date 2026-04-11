@@ -10,8 +10,18 @@ export const getDashboardStats = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    // Fetch medical record summary
-    const medicalRecord = await MedicalRecord.findOne({ citizen: userId });
+    // Fetch all records in parallel for better performance
+    const [medicalRecord, policeRecord, latestTaxRecord, educationRecords] =
+      await Promise.all([
+        MedicalRecord.findOne({ citizen: userId }),
+        PoliceRecord.findOne({ citizen: userId }),
+        TaxRecord.findOne({ user: userId }).sort({ createdAt: -1 }),
+        EducationRecord.find({ citizenId: userId })
+          .select("-document.data")
+          .sort({ passingYear: -1 }),
+      ]);
+
+    // Format medical stats
     let medicalStats = {
       count: 0,
       bloodGroup: "Not set",
@@ -29,8 +39,7 @@ export const getDashboardStats = async (req, res) => {
       };
     }
 
-    // Fetch police record summary
-    const policeRecord = await PoliceRecord.findOne({ citizen: userId });
+    // Format police stats
     let policeStats = {
       count: 0,
       status: "Clear",
@@ -50,9 +59,7 @@ export const getDashboardStats = async (req, res) => {
       };
     }
 
-    const latestTaxRecord = await TaxRecord.findOne({ user: userId }).sort({
-      createdAt: -1,
-    });
+    // Format tax stats
     let taxStats = {
       taxAmount: 0,
       fiscalYear: "N/A",
@@ -73,12 +80,7 @@ export const getDashboardStats = async (req, res) => {
       lastUpdated: req.user.updatedAt,
     };
 
-    // Education stats
-    const educationRecords = await EducationRecord.find({
-      citizenId: userId,
-    }).sort({
-      passingYear: -1,
-    });
+    // Format education stats
     let educationStats = {
       count: educationRecords.length,
       latestQualification:

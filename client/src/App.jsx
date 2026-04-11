@@ -14,6 +14,9 @@ import MedicalRecords from "./pages/MedicalRecords";
 import PoliceRecords from "./pages/PoliceRecords";
 import TaxRecords from "./pages/TaxRecords";
 import EducationRecords from "./pages/EducationRecords";
+import Report from "./pages/ReportPage";
+import ScorePage from "./pages/ScorePage";
+
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import { AdminMedical, AdminPolice } from "./pages/admin/AdminModules"; // Removed AdminTax from here
 import AdminTax from "./pages/admin/AdminTax"; // Imported as a standalone file
@@ -161,6 +164,25 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route 
+            path="/score" 
+            element={
+               <ProtectedRoute user={user} loading={loading}>
+                  <ScorePage user={user} />
+               </ProtectedRoute>
+            } 
+            
+          />
+          <Route 
+            path="/report" 
+            element={
+               <ProtectedRoute user={user} loading={loading}>
+                  <Report user={user} />
+               </ProtectedRoute>
+            } 
+            
+          />
+            
 
           {/* Admin Routes */}
           <Route

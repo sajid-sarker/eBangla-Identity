@@ -117,7 +117,11 @@ function App() {
                 loading={loading}
                 requireCompleteProfile={false}
               >
-                <Profile user={user} setUser={setUser} setAvatarTimestamp={setAvatarTimestamp} />
+                {user?.isAdmin ? (
+                  <Navigate to="/admin/dashboard" replace />
+                ) : (
+                  <Profile user={user} setUser={setUser} setAvatarTimestamp={setAvatarTimestamp} />
+                )}
               </ProtectedRoute>
             }
           />

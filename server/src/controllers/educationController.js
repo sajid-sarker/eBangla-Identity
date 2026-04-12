@@ -1,4 +1,9 @@
 import EducationRecord from "../models/EducationRecord.js";
+import Citizen from "../models/Citizen.js";
+import {
+  sendEducationStatusEmail,
+  sendAdminAddedEducationEmail,
+} from "../utils/emailService.js";
 
 // @desc    Get all education records for the logged-in user
 // @route   GET /api/education
@@ -68,6 +73,14 @@ export const uploadEducationDocument = async (req, res) => {
 
     await record.save();
 
+    // Send email notification if admin added the record
+    if (req.user.isAdmin) {
+      const citizen = await Citizen.findById(targetCitizenId);
+      if (citizen && citizen.email) {
+        sendAdminAddedEducationEmail(citizen.email, citizen.name, record);
+      }
+    }
+
     res.status(201).json({
       message: "Education record submitted successfully for verification",
       record: {
@@ -134,6 +147,13 @@ export const updateEducationStatus = async (req, res) => {
 
     if (!record) {
       return res.status(404).json({ message: "Education record not found" });
+    }
+
+    // Send email notification to the citizen
+    // We fetch the citizen details to get email and name
+    const citizen = await Citizen.findById(record.citizenId);
+    if (citizen && citizen.email) {
+      sendEducationStatusEmail(citizen.email, citizen.name, record, status);
     }
 
     res.status(200).json({

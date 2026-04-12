@@ -1,4 +1,6 @@
 import TaxRecord from "../models/TaxRecord.js";
+import Citizen from "../models/Citizen.js";
+import { sendTaxStatusEmail } from "../utils/emailService.js";
 
 /**
  * @desc    Set official income for a specific year and auto-calculate tax
@@ -86,6 +88,13 @@ export const updateTaxStatus = async (req, res) => {
     );
 
     if (!record) return res.status(404).json({ message: "Record not found" });
+
+    // Send email notification to the citizen
+    // We fetch the citizen details to get email and name
+    const citizen = await Citizen.findById(record.user);
+    if (citizen && citizen.email) {
+      sendTaxStatusEmail(citizen.email, citizen.name, record, status);
+    }
 
     res.status(200).json({ 
         message: `Tax record for ${record.fiscalYear} marked as ${status}`, 

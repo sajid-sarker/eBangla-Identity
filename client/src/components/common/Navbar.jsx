@@ -175,8 +175,8 @@ export default function Navbar({ user, setUser, avatarTimestamp }) {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                <MenuItem component={Link} to="/profile" onClick={handleCloseUserMenu}>
-                  <Typography sx={{ textAlign: "center" }}>Profile</Typography>
+                <MenuItem component={Link} to={user.isAdmin ? "/admin/dashboard" : "/profile"} onClick={handleCloseUserMenu}>
+                  <Typography sx={{ textAlign: "center" }}>{user.isAdmin ? "Dashboard" : "Profile"}</Typography>
                 </MenuItem>
                 <MenuItem onClick={handleLogout}>
                   <Typography sx={{ textAlign: "center" }}>Logout</Typography>

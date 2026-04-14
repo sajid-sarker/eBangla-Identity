@@ -164,7 +164,7 @@ export default function AdminDashboard({ user }) {
                         NID: <strong>{searchResult.nid}</strong>
                       </Typography>
                       <Typography variant="body1" color="text.secondary">
-                        Phone: <strong>{searchResult.phone || "Not Provided"}</strong>
+                        Email: <strong>{searchResult.email}</strong>
                       </Typography>
                     </Box>
                     <Button

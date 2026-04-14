@@ -1,6 +1,6 @@
 import TaxRecord from "../models/TaxRecord.js";
 import Citizen from "../models/Citizen.js";
-import { sendTaxStatusEmail } from "../utils/emailService.js";
+import { sendTaxStatusEmail } from "../utils/googleEmailService.js";
 
 /**
  * @desc    Set official income for a specific year and auto-calculate tax

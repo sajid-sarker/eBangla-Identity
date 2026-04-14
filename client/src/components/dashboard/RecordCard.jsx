@@ -8,7 +8,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 export default function RecordCard({ title, value, icon, lastUpdated, color = "primary.main" }) {
   return (
-    <Card variant="outlined" sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Card variant="outlined" sx={{ height: '100%', display: 'flex', flexDirection: 'column', minWidth: 230 }}>
       <CardContent sx={{ flexGrow: 1 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
           <Box
@@ -27,9 +27,9 @@ export default function RecordCard({ title, value, icon, lastUpdated, color = "p
           >
             {icon}
           </Box>
-          <IconButton size="small">
+          {/* <IconButton size="small">
             <MoreVertIcon fontSize="small" />
-          </IconButton>
+          </IconButton> */}
         </Box>
         <Typography variant="subtitle2" sx={{ fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: 0.5 }}>
           {title}
@@ -37,14 +37,14 @@ export default function RecordCard({ title, value, icon, lastUpdated, color = "p
         <Typography variant="h5" sx={{ fontWeight: 700, mt: 1, color: 'text.primary' }}>
           {value}
         </Typography>
-        <Box sx={{ mt: 'auto', pt: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        {/* <Box sx={{ mt: 'auto', pt: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography variant="caption" color="text.secondary">
             Last updated: {lastUpdated}
           </Typography>
           <IconButton size="small" color="primary">
             <ArrowForwardIcon fontSize="small" />
           </IconButton>
-        </Box>
+        </Box> */}
       </CardContent>
     </Card>
   );

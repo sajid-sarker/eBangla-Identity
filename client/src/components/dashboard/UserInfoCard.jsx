@@ -180,7 +180,7 @@ export default function UserInfoCard({ user, setUser, setAvatarTimestamp }) {
     ?? (user?._id ? `${API_BASE_URL}/user/profile-picture/${user._id}?t=${avatarTimestamp}` : undefined);
 
   return (
-    <Card variant="outlined" sx={{ width: "100%", mb: 2 }}>
+    <Card variant="outlined" sx={{ width: "100%", minWidth: 280, mb: 2 }}>
       <CardContent sx={{ p: 3 }}>
         <Box
           sx={{

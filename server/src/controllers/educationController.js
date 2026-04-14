@@ -3,7 +3,7 @@ import Citizen from "../models/Citizen.js";
 import {
   sendEducationStatusEmail,
   sendAdminAddedEducationEmail,
-} from "../utils/emailService.js";
+} from "../utils/googleEmailService.js";
 
 // @desc    Get all education records for the logged-in user
 // @route   GET /api/education

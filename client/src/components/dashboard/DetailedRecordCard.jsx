@@ -49,6 +49,7 @@ export default function DetailedRecordCard({
         display: "flex",
         flexDirection: "column",
         borderRadius: 2,
+        minWidth: 250,
         transition: "all 0.3s ease",
         "&:hover": {
           boxShadow: theme.shadows[4],

@@ -113,28 +113,30 @@ export default function Login({ setUser }) {
       const response = await axios.post(
         `${API_BASE_URL}/auth/login`,
         { email, password },
-        { withCredentials: true },
+        { withCredentials: true }
       );
 
       console.log("Login successful:", response.data);
-      const userData = response.data.data.user;
-      if (setUser) setUser(userData);
+      
+      // Fixed data mapping to handle both common API response structures
+      const userData = response.data.user || response.data.data?.user;
+      
+      if (userData) {
+        if (setUser) setUser(userData);
 
-      // Clear any previously selected citizen on login
-      sessionStorage.removeItem("adminSelectedCitizen");
+        sessionStorage.removeItem("adminSelectedCitizen");
 
-      // Redirect based on role and profile completion status
-      if (userData.isAdmin) {
-        navigate("/admin/dashboard");
-      } else if (userData.isProfileComplete) {
-        navigate("/dashboard");
-      } else {
-        navigate("/profile");
+         
+        if (userData.isAdmin) {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/profile");
+        }
       }
     } catch (error) {
       console.error("Login failed:", error);
       const errorMsg =
-        error.response?.data?.message || "Login failed. Please try again.";
+        error.response?.data?.message || "Login failed. Please check your credentials.";
       setPasswordError(true);
       setPasswordErrorMessage(errorMsg);
     }
@@ -237,7 +239,7 @@ export default function Login({ setUser }) {
               type="submit"
               fullWidth
               variant="contained"
-              onClick={validateInputs}
+              sx={{ py: 1.2, fontWeight: 'bold' }}
             >
               Sign in
             </Button>
@@ -258,7 +260,7 @@ export default function Login({ setUser }) {
               <Link
                 href="/register"
                 variant="body2"
-                sx={{ alignSelf: "center" }}
+                sx={{ alignSelf: "center", fontWeight: 'bold' }}
               >
                 Sign up
               </Link>

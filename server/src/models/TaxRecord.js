@@ -21,11 +21,18 @@ const taxRecordSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      // Added "Rejected" to match your Admin Panel buttons
       enum: ["Paid", "Pending", "Rejected"], 
       default: "Pending", 
     },
-    // Useful if you store the generated PDF path later
+    
+    transactionId: { 
+      type: String, 
+      default: null 
+    },
+    paidAt: { 
+      type: Date 
+    },
+    
     downloadUrl: { type: String },
   },
   { timestamps: true },

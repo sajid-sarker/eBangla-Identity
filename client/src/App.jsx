@@ -18,8 +18,8 @@ import Report from "./pages/ReportPage";
 import ScorePage from "./pages/ScorePage";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import { AdminMedical, AdminPolice } from "./pages/admin/AdminModules"; // Removed AdminTax from here
-import AdminTax from "./pages/admin/AdminTax"; // Imported as a standalone file
+import { AdminMedical, AdminPolice } from "./pages/admin/AdminModules";
+import AdminTax from "./pages/admin/AdminTax";
 import AdminEducation from "./pages/admin/AdminEducation";
 import { AdminProvider } from "./context/AdminContext";
 
@@ -44,7 +44,6 @@ const ProtectedRoute = ({
     if (!user.isAdmin) {
       return <Navigate to="/" replace />;
     }
-    // Strict RBAC: Check if the admin's role is allowed for this route
     if (allowedAdminRoles.length > 0 && !allowedAdminRoles.includes(user.role)) {
       return <Navigate to="/admin/dashboard" replace />;
     }
@@ -143,14 +142,20 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* FIXED: Changed path from /tax to /tax-records to match your redirects */}
           <Route
-            path="/tax"
+            path="/tax-records"
             element={
               <ProtectedRoute user={user} loading={loading}>
                 <TaxRecords user={user} />
               </ProtectedRoute>
             }
           />
+          
+          {/* Keep /tax as a secondary redirect so old links don't break */}
+          <Route path="/tax" element={<Navigate to="/tax-records" replace />} />
+
           <Route
             path="/education"
             element={
@@ -160,14 +165,6 @@ function App() {
             }
           />
 
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute user={user} loading={loading}>
-                <Navigate to="/profile" replace />
-              </ProtectedRoute>
-            }
-          />
           <Route 
             path="/score" 
             element={
@@ -175,8 +172,8 @@ function App() {
                   <ScorePage user={user} />
                </ProtectedRoute>
             } 
-            
           />
+
           <Route 
             path="/report" 
             element={
@@ -184,10 +181,8 @@ function App() {
                   <Report user={user} />
                </ProtectedRoute>
             } 
-            
           />
             
-
           {/* Admin Routes */}
           <Route
             path="/admin/*"
@@ -246,4 +241,5 @@ function App() {
     </ThemeProvider>
   );
 }
+
 export default App;

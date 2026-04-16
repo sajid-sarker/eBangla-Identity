@@ -18,8 +18,8 @@ import Report from "./pages/ReportPage";
 import ScorePage from "./pages/ScorePage";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import { AdminMedical, AdminPolice } from "./pages/admin/AdminModules"; // Removed AdminTax from here
-import AdminTax from "./pages/admin/AdminTax"; // Imported as a standalone file
+import { AdminMedical, AdminPolice } from "./pages/admin/AdminModules";
+import AdminTax from "./pages/admin/AdminTax";
 import AdminEducation from "./pages/admin/AdminEducation";
 import { AdminProvider } from "./context/AdminContext";
 
@@ -34,7 +34,7 @@ const ProtectedRoute = ({
   requireAdmin = false,
   allowedAdminRoles = [],
 }) => {
-  if (loading) return null; 
+  if (loading) return null;
 
   if (!user) {
     return <Navigate to="/login" replace />;
@@ -44,8 +44,15 @@ const ProtectedRoute = ({
     if (!user.isAdmin) {
       return <Navigate to="/" replace />;
     }
+<<<<<<< HEAD
     // Strict RBAC: Check if the admin's role is allowed for this route
+    if (
+      allowedAdminRoles.length > 0 &&
+      !allowedAdminRoles.includes(user.role)
+    ) {
+=======
     if (allowedAdminRoles.length > 0 && !allowedAdminRoles.includes(user.role)) {
+>>>>>>> 069492ce3c0bc8cf5e3cb111710bc5ab803a2593
       return <Navigate to="/admin/dashboard" replace />;
     }
   }
@@ -103,7 +110,11 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <div className="app-container">
-        <Navbar user={user} setUser={setUser} avatarTimestamp={avatarTimestamp} />
+        <Navbar
+          user={user}
+          setUser={setUser}
+          avatarTimestamp={avatarTimestamp}
+        />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<Login setUser={setUser} />} />
@@ -120,7 +131,11 @@ function App() {
                 {user?.isAdmin ? (
                   <Navigate to="/admin/dashboard" replace />
                 ) : (
-                  <Profile user={user} setUser={setUser} setAvatarTimestamp={setAvatarTimestamp} />
+                  <Profile
+                    user={user}
+                    setUser={setUser}
+                    setAvatarTimestamp={setAvatarTimestamp}
+                  />
                 )}
               </ProtectedRoute>
             }
@@ -143,14 +158,20 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* FIXED: Changed path from /tax to /tax-records to match your redirects */}
           <Route
-            path="/tax"
+            path="/tax-records"
             element={
               <ProtectedRoute user={user} loading={loading}>
                 <TaxRecords user={user} />
               </ProtectedRoute>
             }
           />
+          
+          {/* Keep /tax as a secondary redirect so old links don't break */}
+          <Route path="/tax" element={<Navigate to="/tax-records" replace />} />
+
           <Route
             path="/education"
             element={
@@ -160,6 +181,7 @@ function App() {
             }
           />
 
+<<<<<<< HEAD
           <Route
             path="/dashboard"
             element={
@@ -168,6 +190,24 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/score"
+            element={
+              <ProtectedRoute user={user} loading={loading}>
+                <ScorePage user={user} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/report"
+            element={
+              <ProtectedRoute user={user} loading={loading}>
+                <Report user={user} />
+              </ProtectedRoute>
+            }
+          />
+
+=======
           <Route 
             path="/score" 
             element={
@@ -175,8 +215,8 @@ function App() {
                   <ScorePage user={user} />
                </ProtectedRoute>
             } 
-            
           />
+
           <Route 
             path="/report" 
             element={
@@ -184,10 +224,9 @@ function App() {
                   <Report user={user} />
                </ProtectedRoute>
             } 
-            
           />
             
-
+>>>>>>> 069492ce3c0bc8cf5e3cb111710bc5ab803a2593
           {/* Admin Routes */}
           <Route
             path="/admin/*"
@@ -197,7 +236,11 @@ function App() {
                   <Route
                     path="dashboard"
                     element={
-                      <ProtectedRoute user={user} loading={loading} requireAdmin={true}>
+                      <ProtectedRoute
+                        user={user}
+                        loading={loading}
+                        requireAdmin={true}
+                      >
                         <AdminDashboard user={user} />
                       </ProtectedRoute>
                     }
@@ -205,7 +248,12 @@ function App() {
                   <Route
                     path="medical"
                     element={
-                      <ProtectedRoute user={user} loading={loading} requireAdmin={true} allowedAdminRoles={["medical", "superuser"]}>
+                      <ProtectedRoute
+                        user={user}
+                        loading={loading}
+                        requireAdmin={true}
+                        allowedAdminRoles={["medical", "superuser"]}
+                      >
                         <AdminMedical user={user} />
                       </ProtectedRoute>
                     }
@@ -213,23 +261,39 @@ function App() {
                   <Route
                     path="police"
                     element={
-                      <ProtectedRoute user={user} loading={loading} requireAdmin={true} allowedAdminRoles={["police", "superuser"]}>
+                      <ProtectedRoute
+                        user={user}
+                        loading={loading}
+                        requireAdmin={true}
+                        allowedAdminRoles={["police", "superuser"]}
+                      >
                         <AdminPolice user={user} />
                       </ProtectedRoute>
                     }
                   />
                   <Route
-                    path="tax"
+                    path="/tax-records"
                     element={
-                      <ProtectedRoute user={user} loading={loading} requireAdmin={true} allowedAdminRoles={["general", "superuser"]}>
-                        <AdminTax user={user} />
+                      <ProtectedRoute user={user} loading={loading}>
+                        <TaxRecords user={user} />
                       </ProtectedRoute>
                     }
                   />
+
+                  <Route
+                    path="/tax"
+                    element={<Navigate to="/tax-records" replace />}
+                  />
+
                   <Route
                     path="education"
                     element={
-                      <ProtectedRoute user={user} loading={loading} requireAdmin={true} allowedAdminRoles={["general", "superuser"]}>
+                      <ProtectedRoute
+                        user={user}
+                        loading={loading}
+                        requireAdmin={true}
+                        allowedAdminRoles={["general", "superuser"]}
+                      >
                         <AdminEducation user={user} />
                       </ProtectedRoute>
                     }
@@ -246,4 +310,9 @@ function App() {
     </ThemeProvider>
   );
 }
+<<<<<<< HEAD
 export default App;
+=======
+
+export default App;
+>>>>>>> 069492ce3c0bc8cf5e3cb111710bc5ab803a2593

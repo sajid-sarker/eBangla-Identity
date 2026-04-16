@@ -44,15 +44,7 @@ const ProtectedRoute = ({
     if (!user.isAdmin) {
       return <Navigate to="/" replace />;
     }
-<<<<<<< HEAD
-    // Strict RBAC: Check if the admin's role is allowed for this route
-    if (
-      allowedAdminRoles.length > 0 &&
-      !allowedAdminRoles.includes(user.role)
-    ) {
-=======
     if (allowedAdminRoles.length > 0 && !allowedAdminRoles.includes(user.role)) {
->>>>>>> 069492ce3c0bc8cf5e3cb111710bc5ab803a2593
       return <Navigate to="/admin/dashboard" replace />;
     }
   }
@@ -181,7 +173,6 @@ function App() {
             }
           />
 
-<<<<<<< HEAD
           <Route
             path="/dashboard"
             element={
@@ -207,26 +198,6 @@ function App() {
             }
           />
 
-=======
-          <Route 
-            path="/score" 
-            element={
-               <ProtectedRoute user={user} loading={loading}>
-                  <ScorePage user={user} />
-               </ProtectedRoute>
-            } 
-          />
-
-          <Route 
-            path="/report" 
-            element={
-               <ProtectedRoute user={user} loading={loading}>
-                  <Report user={user} />
-               </ProtectedRoute>
-            } 
-          />
-            
->>>>>>> 069492ce3c0bc8cf5e3cb111710bc5ab803a2593
           {/* Admin Routes */}
           <Route
             path="/admin/*"
@@ -310,9 +281,4 @@ function App() {
     </ThemeProvider>
   );
 }
-<<<<<<< HEAD
 export default App;
-=======
-
-export default App;
->>>>>>> 069492ce3c0bc8cf5e3cb111710bc5ab803a2593

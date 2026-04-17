@@ -13,19 +13,26 @@ import userRoutes from "./routes/userRoutes.js";
 import educationRoutes from "./routes/educationRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
 import scoreRoutes from "./routes/scoreRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 import errorMiddleware from "./middlewares/errorMiddleware.js";
 
 const app = express();
 
+// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(errorMiddleware);
+app.use(errorMiddleware); 
 
-// CORS middleware
-app.use(cors({ origin: true, credentials: true }));
+// CORS configuration
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  }),
+);
 
-//API Routes
+// API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/medical", medicalRoutes);
@@ -35,5 +42,7 @@ app.use("/api/stats", statsRoutes);
 app.use("/api/education", educationRoutes);
 app.use("/api/report", reportRoutes);
 app.use("/api/score", scoreRoutes);
+app.use("/api/payment", paymentRoutes);
+
 
 export default app;

@@ -1,68 +1,31 @@
 import mongoose from "mongoose";
-const { Schema, model } = mongoose;
 
-const AllergySchema = new Schema(
-  {
-    substance: { type: String, required: true },
-    reaction: String,
-    severity: { type: String, enum: ["mild", "moderate", "severe"] },
-  },
-  { _id: false },
-);
+const medicalRecordSchema = new mongoose.Schema({
+  // Link to the Login Account
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, unique: true },
+  
+  bloodGroup: { type: String, required: true },
+  height: { type: Number },
+  weight: { type: Number },
 
-const VaccinationSchema = new Schema(
-  {
-    vaccineName: { type: String, required: true },
-    doseNumber: { type: Number, required: true },
-    dateAdministered: { type: Date, required: true },
+  // Array fields matching your Admin Form
+  diagnoses: [{
+    condition: String,  // Matches 'condition' in Admin form
     hospital: String,
-    nextDueDate: Date,
-  },
-  { _id: false },
-);
+    doctor: String,
+    icdCode: String,
+    status: { type: String, default: "Active" },
+    date: { type: Date, default: Date.now }
+  }],
 
-const DiagnosisSchema = new Schema(
-  {
-    icdCode: String, // ICD-10/11 code
-    description: { type: String, required: true },
-    diagnosedAt: { type: Date, required: true },
+  vaccinations: [{
+    name: String,      // Matches 'name' in Admin form
     hospital: String,
-    doctorName: String,
-    status: {
-      type: String,
-      enum: ["active", "resolved", "chronic"],
-      default: "active",
-    },
-  },
-  { _id: false },
-);
+    doseNumber: Number,
+    date: { type: Date, default: Date.now }
+  }],
 
-const MedicalRecordSchema = new Schema(
-  {
-    citizen: {
-      type: Schema.Types.ObjectId,
-      ref: "Citizen",
-      required: true,
-    },
+  addedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
+}, { timestamps: true });
 
-    bloodGroup: {
-      type: String,
-      enum: ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"],
-    },
-    height: Number, // cm
-    weight: Number, // kg
-    disabilities: [String],
-
-    allergies: [AllergySchema],
-    vaccinations: [VaccinationSchema],
-    diagnoses: [DiagnosisSchema],
-
-    // ── Access control ───────────────────────────────────────
-    // isConfidential: { type: Boolean, default: false }, // citizen can mark sensitive
-  },
-  { timestamps: true },
-);
-
-MedicalRecordSchema.index({ citizen: 1 }, { unique: true });
-
-export default model("MedicalRecord", MedicalRecordSchema);
+export default mongoose.model("MedicalRecord", medicalRecordSchema);

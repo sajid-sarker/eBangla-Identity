@@ -18,7 +18,7 @@ import Report from "./pages/ReportPage";
 import ScorePage from "./pages/ScorePage";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import { AdminMedical } from "./pages/admin/AdminModules";
+import AdminMedical from "./pages/admin/AdminMedical"; 
 import AdminPolice from "./pages/admin/AdminPolice";
 import AdminCitizenPoliceProfile from "./pages/admin/AdminCitizenPoliceProfile";
 import AdminTax from "./pages/admin/AdminTax";
@@ -153,7 +153,7 @@ function App() {
             }
           />
 
-          {/* FIXED: Changed path from /tax to /tax-records to match your redirects */}
+          {/* FIXED: Changed path from /tax to /tax-records to match  redirects */}
           <Route
             path="/tax-records"
             element={

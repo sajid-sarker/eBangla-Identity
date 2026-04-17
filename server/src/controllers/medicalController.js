@@ -1,19 +1,46 @@
 import MedicalRecord from "../models/MedicalRecord.js";
+import Citizen from "../models/Citizen.js";
 
-// @desc    Get current user's medical records
-// @route   GET /api/medical/me
-// @access  Private
+// @desc    Citizen: Get my own records
 export const getMyMedicalRecords = async (req, res) => {
   try {
-    const record = await MedicalRecord.findOne({ citizen: req.user._id });
-
-    if (!record) {
-      return res.status(404).json({ message: "Medical records not found" });
-    }
-
+    const record = await MedicalRecord.findOne({ user: req.user._id });
     res.status(200).json(record);
   } catch (error) {
-    console.error("Error fetching medical records:", error);
-    res.status(500).json({ message: "Server error while fetching medical records" });
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// @desc    Admin: Update citizen data
+export const updateMedicalRecord = async (req, res) => {
+  const { nid, bloodGroup, height, weight, diagnoses, vaccinations } = req.body;
+  try {
+    const citizen = await Citizen.findOne({ nid });
+    if (!citizen) return res.status(404).json({ message: "Citizen not found" });
+
+    // Linkage: Use the userId from the citizen profile to find the login record
+    const targetId = citizen.userId || citizen._id;
+
+    // Filter out empty rows before saving
+    const cleanDiagnoses = (diagnoses || []).filter(d => d.condition && d.condition.trim() !== "");
+    const cleanVaccinations = (vaccinations || []).filter(v => v.name && v.name.trim() !== "");
+
+    const updatedRecord = await MedicalRecord.findOneAndUpdate(
+      { user: targetId },
+      {
+        bloodGroup,
+        height: Number(height),
+        weight: Number(weight),
+        diagnoses: cleanDiagnoses,
+        vaccinations: cleanVaccinations,
+        addedBy: req.user._id 
+      },
+      { new: true, upsert: true }
+    );
+
+    res.status(200).json({ success: true, message: "Medical History Updated Successfully!" });
+  } catch (error) {
+    console.error("Update Error:", error.message);
+    res.status(500).json({ message: "Update failed" });
   }
 };

@@ -61,3 +61,19 @@ export const adminOnly = (req, res, next) => {
     res.status(403).json({ message: "Not authorized as an admin" });
   }
 };
+
+/**
+ * ADDED: authorize middleware
+ * Permits access based on specific roles (e.g., 'medical', 'police')
+ */
+export const authorize = (...roles) => {
+  return (req, res, next) => {
+    // Check if user exists and if their role is in the allowed list
+    if (!req.user || !roles.includes(req.user.role)) {
+      return res.status(403).json({
+        message: `Role (${req.user?.role || "User"}) is not authorized to access this route`,
+      });
+    }
+    next();
+  };
+};

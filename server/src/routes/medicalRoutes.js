@@ -1,9 +1,9 @@
 import express from "express";
-import { getMyMedicalRecords } from "../controllers/medicalController.js";
-import { protect } from "../middlewares/authMiddleware.js";
-
 const router = express.Router();
+import { getMyMedicalRecords, updateMedicalRecord } from "../controllers/medicalController.js";
+import { protect, authorize } from "../middlewares/authMiddleware.js";
 
-router.get("/me", protect, getMyMedicalRecords);
+router.get("/my-records", protect, getMyMedicalRecords);
+router.post("/update", protect, authorize("medical", "superuser"), updateMedicalRecord);
 
 export default router;

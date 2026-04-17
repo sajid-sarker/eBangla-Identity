@@ -15,7 +15,8 @@ import { API_BASE_URL } from "../../config/env";
 import { useAdmin } from "../../context/AdminContext";
 
 export default function AdminDashboard({ user }) {
-  const { selectedCitizen, setSelectedCitizenData, clearSelectedCitizen } = useAdmin();
+  const { selectedCitizen, setSelectedCitizenData, clearSelectedCitizen } =
+    useAdmin();
   const [nid, setNid] = useState("");
   const [searchResult, setSearchResult] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -51,7 +52,10 @@ export default function AdminDashboard({ user }) {
           minHeight: "100vh",
         }}
       >
-        <Typography variant="h4" sx={{ mb: 4, fontWeight: 700, color: "primary.main" }}>
+        <Typography
+          variant="h4"
+          sx={{ mb: 4, fontWeight: 700, color: "primary.main" }}
+        >
           Admin Dashboard
         </Typography>
 
@@ -101,7 +105,8 @@ export default function AdminDashboard({ user }) {
                 Welcome, {user?.name}
               </Typography>
               <Typography variant="body1" color="text.secondary">
-                You are logged in as a <strong>{user?.role}</strong>. Search for a citizen by NID to manage their profile.
+                You are logged in as a <strong>{user?.role}</strong>. Search for
+                a citizen by NID to manage their profile.
               </Typography>
             </Paper>
 
@@ -110,7 +115,11 @@ export default function AdminDashboard({ user }) {
               <Typography variant="h6" gutterBottom>
                 Find Citizen by NID
               </Typography>
-              <Box component="form" onSubmit={handleSearch} sx={{ display: "flex", gap: 2, mt: 2 }}>
+              <Box
+                component="form"
+                onSubmit={handleSearch}
+                sx={{ display: "flex", gap: 2, mt: 2 }}
+              >
                 <TextField
                   fullWidth
                   label="Enter NID Number"
@@ -125,7 +134,11 @@ export default function AdminDashboard({ user }) {
                   disabled={loading}
                   sx={{ px: 4, fontWeight: 600 }}
                 >
-                  {loading ? <CircularProgress size={24} color="inherit" /> : "Search"}
+                  {loading ? (
+                    <CircularProgress size={24} color="inherit" />
+                  ) : (
+                    "Search"
+                  )}
                 </Button>
               </Box>
 
@@ -138,7 +151,11 @@ export default function AdminDashboard({ user }) {
               {searchResult && (
                 <Box sx={{ mt: 4 }}>
                   <Divider sx={{ mb: 3 }} />
-                  <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 600 }}>
+                  <Typography
+                    variant="subtitle1"
+                    gutterBottom
+                    sx={{ fontWeight: 600 }}
+                  >
                     Search Result:
                   </Typography>
                   <Paper
@@ -167,24 +184,31 @@ export default function AdminDashboard({ user }) {
                         Email: <strong>{searchResult.email}</strong>
                       </Typography>
                     </Box>
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                    <Box
+                      sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+                    >
                       <Button
                         variant="contained"
                         color="primary"
                         onClick={() => setSelectedCitizenData(searchResult)}
                         disabled={selectedCitizen?._id === searchResult._id}
                       >
-                        {selectedCitizen?._id === searchResult._id ? "Selected" : "Select Citizen"}
+                        {selectedCitizen?._id === searchResult._id
+                          ? "Selected"
+                          : "Select Citizen"}
                       </Button>
-                      {(user?.role === "police" || user?.role === "superuser") && selectedCitizen?._id === searchResult._id && (
-                        <Button
-                          variant="outlined"
-                          color="secondary"
-                          onClick={() => window.location.href = `/admin/police/citizen/${searchResult._id}`}
-                        >
-                          Manage Police Record
-                        </Button>
-                      )}
+                      {user?.role === "police" &&
+                        selectedCitizen?._id === searchResult._id && (
+                          <Button
+                            variant="outlined"
+                            color="secondary"
+                            onClick={() =>
+                              (window.location.href = `/admin/police/citizen/${searchResult._id}`)
+                            }
+                          >
+                            Manage Police Record
+                          </Button>
+                        )}
                     </Box>
                   </Paper>
                 </Box>
@@ -192,7 +216,14 @@ export default function AdminDashboard({ user }) {
             </Paper>
           </Grid>
           <Grid item xs={12} md={4}>
-            <Paper sx={{ p: 4, borderRadius: 2, bgcolor: "primary.main", color: "white" }}>
+            <Paper
+              sx={{
+                p: 4,
+                borderRadius: 2,
+                bgcolor: "primary.main",
+                color: "white",
+              }}
+            >
               <Typography variant="h6" gutterBottom>
                 Admin ID
               </Typography>

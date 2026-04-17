@@ -15,20 +15,18 @@ export const getReport = async (req, res) => {
     const totalCitizens = citizens.length;
 
     const completedProfiles = citizens.filter(
-      (c) => c.isProfileComplete
+      (c) => c.isProfileComplete,
     ).length;
 
     const incompleteProfiles = totalCitizens - completedProfiles;
 
-    const taxpayers = citizens.filter(
-      (c) => c.yearlyIncome > 300000
-    ).length;
+    const taxpayers = citizens.filter((c) => c.yearlyIncome > 300000).length;
 
     const nonTaxpayers = totalCitizens - taxpayers;
 
     // Optional: tax not applicable (students, unemployed etc.)
     const taxNotApplicable = citizens.filter(
-      (c) => !c.yearlyIncome || c.yearlyIncome === 0
+      (c) => !c.yearlyIncome || c.yearlyIncome === 0,
     ).length;
 
     res.json({
@@ -45,8 +43,6 @@ export const getReport = async (req, res) => {
   }
 };
 
-
-
 // ==========================
 // 📄 DOWNLOAD REPORT (PDF)
 // ==========================
@@ -57,24 +53,38 @@ export const downloadReport = async (req, res) => {
     // Fetch user-specific records
     const medicalRecord = await MedicalRecord.findOne({ citizen: userId });
     const policeRecord = await PoliceRecord.findOne({ citizen: userId });
-    const latestTaxRecord = await TaxRecord.findOne({ user: userId }).sort({ createdAt: -1 });
-    const educationRecords = await EducationRecord.find({ citizenId: userId }).sort({ passingYear: -1 });
+    const latestTaxRecord = await TaxRecord.findOne({ user: userId }).sort({
+      createdAt: -1,
+    });
+    const educationRecords = await EducationRecord.find({ citizenId: userId })
+      .select("-document.data")
+      .sort({ passingYear: -1 });
 
     const formatDate = (date) => {
       if (!date) return "";
-      return new Date(date).toLocaleDateString(undefined, { month: "long", year: "numeric", day: "numeric" });
+      return new Date(date).toLocaleDateString(undefined, {
+        month: "long",
+        year: "numeric",
+        day: "numeric",
+      });
     };
 
     // 📄 Create PDF
     const doc = new PDFDocument({ margin: 50 });
 
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", "attachment; filename=Citizen_Digital_Record_Report.pdf");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=Citizen_Digital_Record_Report.pdf",
+    );
 
     doc.pipe(res);
 
     // Title
-    doc.fillColor("#2B3C8E").fontSize(18).text("Citizen Digital Record Report", { align: "center" });
+    doc
+      .fillColor("#2B3C8E")
+      .fontSize(18)
+      .text("Citizen Digital Record Report", { align: "center" });
     doc.moveDown(2);
 
     // Basic Info
@@ -85,17 +95,25 @@ export const downloadReport = async (req, res) => {
 
     // Function to draw section headers
     const drawSectionHeader = (title) => {
-       doc.fillColor("black").fontSize(12).font("Helvetica-Bold").text(title);
-       doc.moveDown(0.5);
-       doc.font("Helvetica"); // reset to normal
+      doc.fillColor("black").fontSize(12).font("Helvetica-Bold").text(title);
+      doc.moveDown(0.5);
+      doc.font("Helvetica"); // reset to normal
     };
 
     // Police Record
     drawSectionHeader("Police Record");
     if (policeRecord) {
-      const activeCount = policeRecord.cases?.filter((c) => ["pending", "under_investigation", "under_trial"].includes(c.status)).length || 0;
-      doc.text(`• ${activeCount > 0 ? `${activeCount} Active Cases` : "Clear"}`, { indent: 20 });
-      doc.text(`• Last Verifies : ${formatDate(policeRecord.updatedAt)}`, { indent: 20 });
+      const activeCount =
+        policeRecord.cases?.filter((c) =>
+          ["pending", "under_investigation", "under_trial"].includes(c.status),
+        ).length || 0;
+      doc.text(
+        `• ${activeCount > 0 ? `${activeCount} Active Cases` : "Clear"}`,
+        { indent: 20 },
+      );
+      doc.text(`• Last Verifies : ${formatDate(policeRecord.updatedAt)}`, {
+        indent: 20,
+      });
     } else {
       doc.fillColor("#666666").text("No record uploaded yet.", { indent: 20 });
       doc.fillColor("#1E1E1E");
@@ -105,11 +123,21 @@ export const downloadReport = async (req, res) => {
     // Medical
     drawSectionHeader("Medical");
     if (medicalRecord) {
-      doc.text(`• Blood Group : ${medicalRecord.bloodGroup || "Not specified"}`, { indent: 20 });
-      doc.text(`• Vaccination Status : ${medicalRecord.vaccinationStatus || "Not specified"}`, { indent: 20 });
-      doc.text(`• Last Checkup : ${formatDate(medicalRecord.updatedAt)}`, { indent: 20 });
+      doc.text(
+        `• Blood Group : ${medicalRecord.bloodGroup || "Not specified"}`,
+        { indent: 20 },
+      );
+      doc.text(
+        `• Vaccination Status : ${medicalRecord.vaccinationStatus || "Not specified"}`,
+        { indent: 20 },
+      );
+      doc.text(`• Last Checkup : ${formatDate(medicalRecord.updatedAt)}`, {
+        indent: 20,
+      });
     } else {
-      doc.fillColor("#666666").text("No medical status uploaded yet.", { indent: 20 });
+      doc
+        .fillColor("#666666")
+        .text("No medical status uploaded yet.", { indent: 20 });
       doc.fillColor("#1E1E1E");
     }
     doc.moveDown(1.5);
@@ -118,10 +146,14 @@ export const downloadReport = async (req, res) => {
     drawSectionHeader("Tax");
     if (latestTaxRecord) {
       doc.text(`• Tax Amount : ${latestTaxRecord.taxAmount}`, { indent: 20 });
-      doc.text(`• Tax Identification Number : ${latestTaxRecord.tin || ""}`, { indent: 20 });
+      doc.text(`• Tax Identification Number : ${latestTaxRecord.tin || ""}`, {
+        indent: 20,
+      });
       doc.text(`• Tax Status : ${latestTaxRecord.status}`, { indent: 20 });
     } else {
-      doc.fillColor("#666666").text("No tax information uploaded yet.", { indent: 20 });
+      doc
+        .fillColor("#666666")
+        .text("No tax information uploaded yet.", { indent: 20 });
       doc.fillColor("#1E1E1E");
     }
     doc.moveDown(1.5);
@@ -135,23 +167,33 @@ export const downloadReport = async (req, res) => {
       doc.text("Exam name", 70, tableTop);
       doc.text("Year", 250, tableTop);
       doc.text("Result", 350, tableTop);
-      
-      doc.moveTo(50, tableTop + 15).lineTo(450, tableTop + 15).stroke();
-      
+
+      doc
+        .moveTo(50, tableTop + 15)
+        .lineTo(450, tableTop + 15)
+        .stroke();
+
       doc.font("Helvetica");
       let currentY = tableTop + 20;
 
       educationRecords.forEach((row) => {
-         const examName = row.degreeName ? `${row.qualification} - ${row.degreeName}` : row.qualification;
-         doc.text(examName || "", 70, currentY);
-         doc.text(row.passingYear?.toString() || "", 250, currentY);
-         doc.text(row.status || "", 350, currentY);
-         currentY += 20;
-         doc.moveTo(50, currentY - 5).lineTo(450, currentY - 5).stroke();
+        const examName = row.degreeName
+          ? `${row.qualification} - ${row.degreeName}`
+          : row.qualification;
+        doc.text(examName || "", 70, currentY);
+        doc.text(row.passingYear?.toString() || "", 250, currentY);
+        doc.text(row.status || "", 350, currentY);
+        currentY += 20;
+        doc
+          .moveTo(50, currentY - 5)
+          .lineTo(450, currentY - 5)
+          .stroke();
       });
       doc.y = currentY + 10; // Move cursor past table
     } else {
-      doc.fillColor("#666666").text("No education records uploaded yet.", { indent: 20 });
+      doc
+        .fillColor("#666666")
+        .text("No education records uploaded yet.", { indent: 20 });
       doc.fillColor("#1E1E1E");
     }
 

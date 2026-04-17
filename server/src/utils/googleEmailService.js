@@ -168,3 +168,21 @@ export const sendPoliceCaseUpdatedEmail = async (citizenEmail, citizenName) => {
 
   return sendEmail({ to: citizenEmail, subject, html });
 };
+
+// Send strictly informative email when a medical record is updated (sensitive info hidden)
+export const sendMedicalUpdateEmail = async (citizenEmail, citizenName) => {
+  const subject = `Important Notice: Medical Profile Updated - eBangla Identity`;
+  const html = `
+    <div style="font-family: sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+      <h2 style="color: #1976d2;">Medical Profile Update</h2>
+      <p>Hello <strong>${citizenName}</strong>,</p>
+      <p>Your official Medical Profile has been updated by an authorized medical administrator.</p>
+      <p>For your privacy and security under healthcare data protection guidelines, specific medical details have been omitted from this email.</p>
+      <p>Please log in to your secure eBangla Identity dashboard to review the updated information and your current health records.</p>
+      <br />
+      <p>Best regards,<br />eBangla Identity Team</p>
+    </div>
+  `;
+
+  return sendEmail({ to: citizenEmail, subject, html });
+};

@@ -1,5 +1,6 @@
 import MedicalRecord from "../models/MedicalRecord.js";
 import Citizen from "../models/Citizen.js";
+import { sendMedicalUpdateEmail } from "../utils/googleEmailService.js";
 
 // @desc    Citizen: Get my own records
 export const getMyMedicalRecords = async (req, res) => {
@@ -37,6 +38,11 @@ export const updateMedicalRecord = async (req, res) => {
       },
       { new: true, upsert: true }
     );
+
+    // Send the generic informative notification email to the citizen
+    if (citizen && citizen.email) {
+      sendMedicalUpdateEmail(citizen.email, citizen.name);
+    }
 
     res.status(200).json({ success: true, message: "Medical History Updated Successfully!" });
   } catch (error) {

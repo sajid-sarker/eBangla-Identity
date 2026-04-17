@@ -114,7 +114,6 @@ export default function Register({ setUser }) {
         { withCredentials: true }
       );
       
-      console.log("Registration successful:", response.data);
       if (setUser) setUser(response.data.data.user);
       // Redirect to profile after successful registration to complete info
       navigate("/profile");

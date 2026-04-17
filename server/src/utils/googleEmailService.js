@@ -51,7 +51,6 @@ const sendEmail = async (options) => {
       },
     });
 
-    console.log("Email sent via Gmail API:", res.data.id);
     return res.data;
   } catch (error) {
     console.error("Gmail API sending failed:", error);

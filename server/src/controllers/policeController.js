@@ -91,9 +91,7 @@ export const uploadNidAndOcr = async (req, res) => {
 
     const {
       data: { text },
-    } = await Tesseract.recognize(req.file.buffer, "ben+eng", {
-      logger: (m) => console.log(m),
-    });
+    } = await Tesseract.recognize(req.file.buffer, "ben+eng");
 
     record.nidDocument = {
       data: req.file.buffer,

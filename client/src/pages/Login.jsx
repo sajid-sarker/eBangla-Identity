@@ -116,7 +116,6 @@ export default function Login({ setUser }) {
         { withCredentials: true },
       );
 
-      console.log("Login successful:", response.data);
       const userData = response.data.data.user;
       if (setUser) setUser(userData);
 

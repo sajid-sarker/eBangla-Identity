@@ -23,7 +23,6 @@ const generateTokenAndSetCookie = (res, userId, role = "citizen") => {
 
 // AUTH LOGIC
 export const register = async (req, res) => {
-  console.log("Registering user:", req.body.email);
   const session = await mongoose.startSession();
   session.startTransaction();
 

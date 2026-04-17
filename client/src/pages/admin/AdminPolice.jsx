@@ -7,8 +7,10 @@ import {
 } from "@mui/material";
 import SideMenu from "../../components/SideMenu";
 import { API_BASE_URL } from "../../config/env";
+import { useAdmin } from "../../context/AdminContext";
 
 export default function AdminPolice({ user }) {
+  const { selectedCitizen } = useAdmin();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -22,10 +24,18 @@ export default function AdminPolice({ user }) {
   const [notes, setNotes] = useState("");
 
   const fetchUsers = async () => {
+    if (!selectedCitizen) {
+      setUsers([]);
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
-      const res = await axios.get(`${API_BASE_URL}/police/users`);
-      setUsers(res.data);
+      const res = await axios.get(`${API_BASE_URL}/police/citizen/${selectedCitizen._id}`);
+      setUsers([{
+        citizen: res.data.citizen,
+        policeRecord: res.data
+      }]);
     } catch (err) {
       console.error("Failed to fetch users", err);
     } finally {
@@ -35,7 +45,7 @@ export default function AdminPolice({ user }) {
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [selectedCitizen]);
 
   // --- Handlers for Verification Modal ---
   const handleOpenVerify = (row) => {
@@ -106,7 +116,15 @@ export default function AdminPolice({ user }) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {users.map((row) => (
+                  {users.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={4} align="center" sx={{ py: 4 }}>
+                        <Typography color="text.secondary">
+                          Please search and select a specific citizen from the Home Dashboard first.
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ) : users.map((row) => (
                     <TableRow key={row.citizen._id}>
                       <TableCell>{row.citizen.name}</TableCell>
                       <TableCell>{row.citizen.nid || "N/A"}</TableCell>

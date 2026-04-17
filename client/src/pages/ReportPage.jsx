@@ -403,7 +403,7 @@ const ReportPage = ({ user }) => {
                               }}
                             >
                               <TableCell align="center">
-                                {row.level || row.examName}
+                                {row.degreeName ? `${row.qualification} - ${row.degreeName}` : row.qualification}
                               </TableCell>
                               <TableCell align="center">
                                 {row.passingYear || row.year}
@@ -412,7 +412,7 @@ const ReportPage = ({ user }) => {
                                 align="center"
                                 sx={{ borderRight: "none !important" }}
                               >
-                                {row.gpa || row.result}
+                                {row.status}
                               </TableCell>
                             </TableRow>
                           ))}

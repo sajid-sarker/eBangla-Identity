@@ -20,6 +20,8 @@ const CaseSchema = new Schema(
       enum: [
         "pending",
         "under_investigation",
+        "under_trial",
+        "dismissed",
         "closed",
         "acquitted",
         "convicted",
@@ -39,6 +41,17 @@ const PoliceRecordSchema = new Schema(
     },
 
     cases: [CaseSchema],
+    verificationStatus: {
+      type: String,
+      enum: ["Pending", "Verified", "Rejected"],
+      default: "Pending",
+    },
+    notes: String,
+    nidDocument: {
+      data: Buffer,
+      contentType: String,
+    },
+    nidOcrText: String,
   },
   { timestamps: true },
 );

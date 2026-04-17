@@ -18,8 +18,10 @@ import Report from "./pages/ReportPage";
 import ScorePage from "./pages/ScorePage";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import { AdminMedical, AdminPolice } from "./pages/admin/AdminModules"; // Removed AdminTax from here
+import { AdminMedical } from "./pages/admin/AdminModules";
 import AdminTax from "./pages/admin/AdminTax"; // Imported as a standalone file
+import AdminPolice from "./pages/admin/AdminPolice"; // Imported as a standalone file
+import AdminCitizenPoliceProfile from "./pages/admin/AdminCitizenPoliceProfile";
 import AdminEducation from "./pages/admin/AdminEducation";
 import { AdminProvider } from "./context/AdminContext";
 
@@ -34,7 +36,7 @@ const ProtectedRoute = ({
   requireAdmin = false,
   allowedAdminRoles = [],
 }) => {
-  if (loading) return null; 
+  if (loading) return null;
 
   if (!user) {
     return <Navigate to="/login" replace />;
@@ -168,25 +170,25 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route 
-            path="/score" 
+          <Route
+            path="/score"
             element={
-               <ProtectedRoute user={user} loading={loading}>
-                  <ScorePage user={user} />
-               </ProtectedRoute>
-            } 
-            
+              <ProtectedRoute user={user} loading={loading}>
+                <ScorePage user={user} />
+              </ProtectedRoute>
+            }
+
           />
-          <Route 
-            path="/report" 
+          <Route
+            path="/report"
             element={
-               <ProtectedRoute user={user} loading={loading}>
-                  <Report user={user} />
-               </ProtectedRoute>
-            } 
-            
+              <ProtectedRoute user={user} loading={loading}>
+                <Report user={user} />
+              </ProtectedRoute>
+            }
+
           />
-            
+
 
           {/* Admin Routes */}
           <Route
@@ -215,6 +217,14 @@ function App() {
                     element={
                       <ProtectedRoute user={user} loading={loading} requireAdmin={true} allowedAdminRoles={["police", "superuser"]}>
                         <AdminPolice user={user} />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="police/citizen/:id"
+                    element={
+                      <ProtectedRoute user={user} loading={loading} requireAdmin={true} allowedAdminRoles={["police", "superuser"]}>
+                        <AdminCitizenPoliceProfile user={user} />
                       </ProtectedRoute>
                     }
                   />

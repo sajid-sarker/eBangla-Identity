@@ -46,9 +46,14 @@ export default function MenuContent({ user }) {
           path: "/admin/medical",
         },
         {
-          text: "Police",
-          icon: <AssignmentRoundedIcon />,
+          text: "Police Verification",
+          icon: <LocalPoliceIcon />,
           path: "/admin/police",
+        },
+        {
+          text: "Cases",
+          icon: <AssignmentRoundedIcon />,
+          path: "/admin/cases",
         },
         { text: "Tax", icon: <AssignmentRoundedIcon />, path: "/admin/tax" },
         {
@@ -64,11 +69,18 @@ export default function MenuContent({ user }) {
         path: "/admin/medical",
       });
     } else if (role === "police") {
-      items.push({
-        text: "Police",
-        icon: <AssignmentRoundedIcon />,
-        path: "/admin/police",
-      });
+      items.push(
+        {
+          text: "Police Verification",
+          icon: <LocalPoliceIcon />,
+          path: "/admin/police",
+        },
+        {
+          text: "Cases",
+          icon: <AssignmentRoundedIcon />,
+          path: "/admin/cases",
+        }
+      );
     } else if (role === "general") {
       items.push(
         { text: "Tax", icon: <AssignmentRoundedIcon />, path: "/admin/tax" },

@@ -245,6 +245,14 @@ function App() {
                     }
                   />
                   <Route
+                    path="cases"
+                    element={
+                      <ProtectedRoute user={user} loading={loading} requireAdmin={true} allowedAdminRoles={["police", "superuser"]}>
+                        <AdminCitizenPoliceProfile user={user} />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
                     path="police/citizen/:id"
                     element={
                       <ProtectedRoute user={user} loading={loading} requireAdmin={true} allowedAdminRoles={["police", "superuser"]}>

@@ -11,9 +11,12 @@ import LocalPoliceIcon from '@mui/icons-material/LocalPolice';
 import SideMenu from "../../components/SideMenu";
 import DetailedRecordCard from "../../components/dashboard/DetailedRecordCard";
 import { API_BASE_URL } from "../../config/env";
+import { useAdmin } from "../../context/AdminContext";
 
 export default function AdminCitizenPoliceProfile({ user }) {
   const { id } = useParams(); // Citizen ID
+  const { selectedCitizen } = useAdmin();
+  const citizenId = id || selectedCitizen?._id;
   const navigate = useNavigate();
 
   const [citizen, setCitizen] = useState(null);
@@ -33,10 +36,14 @@ export default function AdminCitizenPoliceProfile({ user }) {
   const [updateStatusForm, setUpdateStatusForm] = useState({ status: "", verdict: "" });
 
   const fetchData = async () => {
+    if (!citizenId) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
       // Fetch Police Record which now intrinsically populates the associated citizen
-      const polRes = await axios.get(`${API_BASE_URL}/police/citizen/${id}`);
+      const polRes = await axios.get(`${API_BASE_URL}/police/citizen/${citizenId}`);
       setPoliceRecord(polRes.data);
       setCitizen(polRes.data.citizen);
     } catch (err) {
@@ -49,7 +56,7 @@ export default function AdminCitizenPoliceProfile({ user }) {
 
   useEffect(() => {
     fetchData();
-  }, [id]);
+  }, [citizenId]);
 
   // --- Add Case Handlers ---
   const handleOpenCaseModal = () => {
@@ -62,7 +69,7 @@ export default function AdminCitizenPoliceProfile({ user }) {
       return alert("Required fields: Case Number, Type, Date.");
     }
     try {
-      await axios.post(`${API_BASE_URL}/police/cases/${id}`, caseForm);
+      await axios.post(`${API_BASE_URL}/police/cases/${citizenId}`, caseForm);
       alert("Case added successfully");
       setCaseModalOpen(false);
       fetchData();
@@ -80,7 +87,7 @@ export default function AdminCitizenPoliceProfile({ user }) {
 
   const handleUpdateStatus = async () => {
     try {
-      await axios.put(`${API_BASE_URL}/police/cases/${id}/${selectedCase.caseNumber}`, updateStatusForm);
+      await axios.put(`${API_BASE_URL}/police/cases/${citizenId}/${selectedCase.caseNumber}`, updateStatusForm);
       alert("Case status updated!");
       setStatusModalOpen(false);
       fetchData();
@@ -108,7 +115,7 @@ export default function AdminCitizenPoliceProfile({ user }) {
 
   const handleDownload = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/police/report/download/${id}`, {
+      const res = await axios.get(`${API_BASE_URL}/police/report/download/${citizenId}`, {
         responseType: "blob",
       });
       const url = window.URL.createObjectURL(new Blob([res.data]));
@@ -130,9 +137,9 @@ export default function AdminCitizenPoliceProfile({ user }) {
         
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Box display="flex" alignItems="center" gap={2}>
-            <Button startIcon={<ArrowBackIcon />} onClick={() => navigate(-1)}>Back</Button>
+            {id && <Button startIcon={<ArrowBackIcon />} onClick={() => navigate(-1)}>Back</Button>}
             <Typography variant="h4" sx={{ fontWeight: 700, color: "primary.main" }}>
-              Citizen Police Profile
+              Citizen Cases Profile
             </Typography>
           </Box>
           <Button variant="contained" color="secondary" onClick={handleDownload} disabled={!citizen}>
@@ -140,7 +147,13 @@ export default function AdminCitizenPoliceProfile({ user }) {
           </Button>
         </Box>
 
-        {loading ? (
+        {!citizenId ? (
+          <Paper sx={{ p: 4, textAlign: 'center', mt: 4 }}>
+            <Typography color="text.secondary">
+              Please search and select a specific citizen from the Home Dashboard to view and log cases.
+            </Typography>
+          </Paper>
+        ) : loading ? (
           <CircularProgress sx={{ mx: "auto", mt: 4 }} />
         ) : error ? (
           <Alert severity="error">{error}</Alert>

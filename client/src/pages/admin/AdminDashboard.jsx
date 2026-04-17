@@ -197,18 +197,7 @@ export default function AdminDashboard({ user }) {
                           ? "Selected"
                           : "Select Citizen"}
                       </Button>
-                      {user?.role === "police" &&
-                        selectedCitizen?._id === searchResult._id && (
-                          <Button
-                            variant="outlined"
-                            color="secondary"
-                            onClick={() =>
-                              (window.location.href = `/admin/police/citizen/${searchResult._id}`)
-                            }
-                          >
-                            Manage Police Record
-                          </Button>
-                        )}
+
                     </Box>
                   </Paper>
                 </Box>

@@ -253,17 +253,17 @@ function App() {
                     }
                   />
                   <Route
-                    path="/tax-records"
+                    path="tax"
                     element={
-                      <ProtectedRoute user={user} loading={loading}>
-                        <TaxRecords user={user} />
+                      <ProtectedRoute
+                        user={user}
+                        loading={loading}
+                        requireAdmin={true}
+                        allowedAdminRoles={["general", "superuser"]}
+                      >
+                        <AdminTax user={user} />
                       </ProtectedRoute>
                     }
-                  />
-
-                  <Route
-                    path="/tax"
-                    element={<Navigate to="/tax-records" replace />}
                   />
 
                   <Route

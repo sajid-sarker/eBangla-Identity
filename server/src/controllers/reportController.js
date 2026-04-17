@@ -93,7 +93,8 @@ export const downloadReport = async (req, res) => {
     // Police Record
     drawSectionHeader("Police Record");
     if (policeRecord) {
-      doc.text(`• ${policeRecord.cases?.filter((c) => ["pending", "under_investigation"].includes(c.status)).length > 0 ? "Active Cases Found" : "Clear"}`, { indent: 20 });
+      const activeCount = policeRecord.cases?.filter((c) => ["pending", "under_investigation", "under_trial"].includes(c.status)).length || 0;
+      doc.text(`• ${activeCount > 0 ? `${activeCount} Active Cases` : "Clear"}`, { indent: 20 });
       doc.text(`• Last Verifies : ${formatDate(policeRecord.updatedAt)}`, { indent: 20 });
     } else {
       doc.fillColor("#666666").text("No record uploaded yet.", { indent: 20 });
@@ -141,9 +142,10 @@ export const downloadReport = async (req, res) => {
       let currentY = tableTop + 20;
 
       educationRecords.forEach((row) => {
-         doc.text(row.level || row.examName || "", 70, currentY);
-         doc.text(row.passingYear || row.year || "", 250, currentY);
-         doc.text(row.gpa || row.result || "", 350, currentY);
+         const examName = row.degreeName ? `${row.qualification} - ${row.degreeName}` : row.qualification;
+         doc.text(examName || "", 70, currentY);
+         doc.text(row.passingYear?.toString() || "", 250, currentY);
+         doc.text(row.status || "", 350, currentY);
          currentY += 20;
          doc.moveTo(50, currentY - 5).lineTo(450, currentY - 5).stroke();
       });

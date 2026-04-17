@@ -1,7 +1,7 @@
 import { config } from "dotenv";
 
 // config({ path: `env.${process.env.NODE_ENV || "development"}.local` });
-config(".env");
+config({ path: "server/.env" });
 
 export const {
   PORT,

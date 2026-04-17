@@ -18,7 +18,9 @@ import Report from "./pages/ReportPage";
 import ScorePage from "./pages/ScorePage";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import { AdminMedical, AdminPolice } from "./pages/admin/AdminModules";
+import { AdminMedical } from "./pages/admin/AdminModules";
+import AdminPolice from "./pages/admin/AdminPolice";
+import AdminCitizenPoliceProfile from "./pages/admin/AdminCitizenPoliceProfile";
 import AdminTax from "./pages/admin/AdminTax";
 import AdminEducation from "./pages/admin/AdminEducation";
 import { AdminProvider } from "./context/AdminContext";
@@ -239,6 +241,14 @@ function App() {
                         allowedAdminRoles={["police", "superuser"]}
                       >
                         <AdminPolice user={user} />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="police/citizen/:id"
+                    element={
+                      <ProtectedRoute user={user} loading={loading} requireAdmin={true} allowedAdminRoles={["police", "superuser"]}>
+                        <AdminCitizenPoliceProfile user={user} />
                       </ProtectedRoute>
                     }
                   />

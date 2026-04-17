@@ -49,7 +49,7 @@ export const getDashboardStats = async (req, res) => {
     if (policeRecord) {
       const activeCases =
         policeRecord.cases?.filter((c) =>
-          ["pending", "under_investigation"].includes(c.status),
+          ["pending", "under_investigation", "under_trial"].includes(c.status),
         ).length || 0;
 
       policeStats = {

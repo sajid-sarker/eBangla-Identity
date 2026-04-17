@@ -167,14 +167,25 @@ export default function AdminDashboard({ user }) {
                         Email: <strong>{searchResult.email}</strong>
                       </Typography>
                     </Box>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => setSelectedCitizenData(searchResult)}
-                      disabled={selectedCitizen?._id === searchResult._id}
-                    >
-                      {selectedCitizen?._id === searchResult._id ? "Selected" : "Select Citizen"}
-                    </Button>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => setSelectedCitizenData(searchResult)}
+                        disabled={selectedCitizen?._id === searchResult._id}
+                      >
+                        {selectedCitizen?._id === searchResult._id ? "Selected" : "Select Citizen"}
+                      </Button>
+                      {(user?.role === "police" || user?.role === "superuser") && selectedCitizen?._id === searchResult._id && (
+                        <Button
+                          variant="outlined"
+                          color="secondary"
+                          onClick={() => window.location.href = `/admin/police/citizen/${searchResult._id}`}
+                        >
+                          Manage Police Record
+                        </Button>
+                      )}
+                    </Box>
                   </Paper>
                 </Box>
               )}

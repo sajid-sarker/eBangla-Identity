@@ -28,60 +28,53 @@ export const getCitizenScore = async (req, res) => {
       citizen.profession !== "Student";
 
     const hasPoliceCase = policeRecord?.cases?.some((c) =>
-      ["pending", "under_investigation"].includes(c.status),
+      ["pending", "under_investigation", "under_trial"].includes(c.status),
     );
     const isVerified = citizen.isProfileComplete; // or whatever verifies the profile
     const medicalCheckup = medicalRecord ? true : false; // simplistic check, based on whether they uploaded anything
     const taxPaid = taxRecord?.status === "Paid";
 
     let earned = 0;
-    let total = 0;
     let breakdown = [];
 
     // ================= TAX =================
     if (isTaxApplicable || taxPaid) {
-      // even if under threshold, if they paid it counts
-      total += 20;
-
       if (taxPaid) {
-        earned += 20;
-        breakdown.push("Tax compliance: +20");
+        earned += 25;
+        breakdown.push("Tax compliance: +25");
       } else {
-        breakdown.push("Tax pending: 0/20");
+        breakdown.push("Tax pending: 0/25");
       }
     } else {
-      breakdown.push("Tax not applicable");
+      earned += 25; // Default points if not applicable
+      breakdown.push("Tax not applicable: +25");
     }
 
     // ================= POLICE =================
-    total += 30;
     if (!hasPoliceCase) {
-      earned += 30;
-      breakdown.push("No police record: +30");
+      earned += 25;
+      breakdown.push("No police record: +25");
     } else {
-      breakdown.push("Police case: 0/30");
+      breakdown.push("Police case: 0/25");
     }
 
     // ================= PROFILE =================
-    total += 20;
     if (isVerified) {
-      earned += 20;
-      breakdown.push("Verified Profile: +20");
+      earned += 25;
+      breakdown.push("Verified Profile: +25");
     } else {
-      breakdown.push("Profile unverified: 0/20");
+      breakdown.push("Profile unverified: 0/25");
     }
 
     // ================= MEDICAL =================
-    total += 10;
     if (medicalCheckup) {
-      earned += 10;
-      breakdown.push("Medical Active: +10");
+      earned += 25;
+      breakdown.push("Medical Active: +25");
     } else {
-      breakdown.push("Medical inactive: 0/10");
+      breakdown.push("Medical inactive: 0/25");
     }
 
-    // 🔥 Normalized score
-    let score = total > 0 ? Math.round((earned / total) * 100) : 0;
+    let score = earned;
 
     // Status
     let status = "";
@@ -90,13 +83,12 @@ export const getCitizenScore = async (req, res) => {
     else if (score >= 40) status = "Average";
     else status = "Risky";
 
-    // 🔥 Optional extra info (very useful)
     res.json({
       score,
       status,
       breakdown,
       earned,
-      total,
+      total: 100,
     });
   } catch (error) {
     console.error("Score calculation error:", error);

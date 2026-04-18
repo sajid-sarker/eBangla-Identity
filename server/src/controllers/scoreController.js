@@ -11,7 +11,7 @@ export const getCitizenScore = async (req, res) => {
     const [citizen, medicalRecord, policeRecord, taxRecord] = await Promise.all(
       [
         Citizen.findById(userId).select("-profilePicture.data"),
-        MedicalRecord.findOne({ citizen: userId }),
+        MedicalRecord.findOne({ user: userId }),
         PoliceRecord.findOne({ citizen: userId }),
         TaxRecord.findOne({ user: userId }).sort({ createdAt: -1 }),
       ],

@@ -51,7 +51,7 @@ export const downloadReport = async (req, res) => {
     const userId = req.user._id;
 
     // Fetch user-specific records
-    const medicalRecord = await MedicalRecord.findOne({ citizen: userId });
+    const medicalRecord = await MedicalRecord.findOne({ user: userId });
     const policeRecord = await PoliceRecord.findOne({ citizen: userId });
     const latestTaxRecord = await TaxRecord.findOne({ user: userId }).sort({
       createdAt: -1,

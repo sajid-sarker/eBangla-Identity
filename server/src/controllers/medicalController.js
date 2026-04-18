@@ -1,12 +1,44 @@
 import MedicalRecord from "../models/MedicalRecord.js";
 import Citizen from "../models/Citizen.js";
 
-// @desc    Citizen: Get my own records
+// @desc    Citizen: Get own records
 export const getMyMedicalRecords = async (req, res) => {
   try {
     const record = await MedicalRecord.findOne({ user: req.user._id });
     res.status(200).json(record);
   } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// @desc    Admin: Get citizen medical records by NID
+export const getAdminMedicalRecordByCitizen = async (req, res) => {
+  try {
+    const { nid } = req.params;
+    const citizen = await Citizen.findOne({ nid });
+    
+    if (!citizen) {
+      return res.status(404).json({ message: "Citizen not found" });
+    }
+
+    const targetId = citizen.userId || citizen._id;
+    const record = await MedicalRecord.findOne({ user: targetId });
+    
+    if (record) {
+      // Sort diagnoses and vaccinations by date (newest first)
+      const sortedRecord = record.toObject();
+      sortedRecord.diagnoses = (sortedRecord.diagnoses || []).sort((a, b) => 
+        new Date(b.date) - new Date(a.date)
+      );
+      sortedRecord.vaccinations = (sortedRecord.vaccinations || []).sort((a, b) => 
+        new Date(b.date) - new Date(a.date)
+      );
+      return res.status(200).json(sortedRecord);
+    }
+    
+    res.status(200).json({});
+  } catch (error) {
+    console.error("Fetch Error:", error.message);
     res.status(500).json({ message: "Server error" });
   }
 };

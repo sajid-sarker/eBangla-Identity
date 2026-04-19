@@ -81,8 +81,8 @@ export const paymentSuccess = async (req, res) => {
 
     if (result) {
       console.log("✅ Database Updated: Status is now PAID");
-      // Explicitly redirecting to the tax-records path
-      return res.redirect(`${process.env.FRONTEND_URL}/tax-records`);
+      const yearQuery = result.fiscalYear ? `?year=${encodeURIComponent(result.fiscalYear)}&status=success` : "?status=success";
+      return res.redirect(`${process.env.FRONTEND_URL}/tax-records${yearQuery}`);
     } else {
       console.error("⚠️ Record not found for tran_id:", tran_id);
       return res.redirect(`${process.env.FRONTEND_URL}/tax-records`);

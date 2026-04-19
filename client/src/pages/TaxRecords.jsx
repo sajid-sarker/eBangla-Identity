@@ -14,15 +14,17 @@ import { useLocation, useNavigate } from "react-router-dom";
 axios.defaults.withCredentials = true;
 
 const TaxRecords = ({ user }) => {
-  const [selectedYear, setSelectedYear] = useState("2026");
+  const location = useLocation();
+  const navigate = useNavigate();
+  const query = new URLSearchParams(location.search);
+  const initialYear = query.get("year") || "2026";
+
+  const [selectedYear, setSelectedYear] = useState(initialYear);
   const [inputIncome, setInputIncome] = useState(""); 
   const [simulatedTax, setSimulatedTax] = useState(null); 
   const [records, setRecords] = useState([]); 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ open: false, text: "", severity: "success" });
-  
-  const location = useLocation();
-  const navigate = useNavigate();
 
   const years = Array.from({ length: 2026 - 2000 + 1 }, (_, i) => 2026 - i);
 
@@ -50,11 +52,9 @@ const TaxRecords = ({ user }) => {
     const query = new URLSearchParams(location.search);
     if (query.get("status") === "success") {
       setMessage({ open: true, text: "Payment Successful! Record Updated.", severity: "success" });
-      fetchTaxData();
-      // Clean the URL so the message doesn't keep popping up
       navigate(location.pathname, { replace: true });
     }
-  }, [location]);
+  }, [location.search, navigate, location.pathname]);
 
   const handlePayment = async (record) => {
     try {

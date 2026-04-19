@@ -1,7 +1,8 @@
 import MedicalRecord from "../models/MedicalRecord.js";
 import Citizen from "../models/Citizen.js";
+import { sendMedicalUpdateEmail } from "../utils/googleEmailService.js";
 
-// @desc    Citizen: Get own records
+// @desc    Citizen: Get my own records
 export const getMyMedicalRecords = async (req, res) => {
   try {
     const record = await MedicalRecord.findOne({ user: req.user._id });
@@ -34,6 +35,11 @@ export const getAdminMedicalRecordByCitizen = async (req, res) => {
         new Date(b.date) - new Date(a.date)
       );
       return res.status(200).json(sortedRecord);
+    }
+    
+    // Send the generic informative notification email to the citizen
+    if (citizen && citizen.email) {
+      sendMedicalUpdateEmail(citizen.email, citizen.name);
     }
     
     res.status(200).json({});

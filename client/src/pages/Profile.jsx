@@ -13,33 +13,28 @@ import RecordCard from "../components/dashboard/RecordCard";
 import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
 import LocalPoliceIcon from "@mui/icons-material/LocalPolice";
 import PaymentsIcon from "@mui/icons-material/Payments";
-import HomeWorkIcon from "@mui/icons-material/HomeWork"; 
 
 export default function Profile({ user, setUser, setAvatarTimestamp }) {
   const [stats, setStats] = useState(null);
   const [latestTax, setLatestTax] = useState(null);
 
-  
   axios.defaults.withCredentials = true;
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-      
         const statsRes = await axios.get(`${API_BASE_URL}/stats/dashboard`);
         setStats(statsRes.data);
 
-        
         const taxRes = await axios.get(`${API_BASE_URL}/tax?year=2026`);
         if (taxRes.data && taxRes.data.length > 0) {
-        
           setLatestTax(taxRes.data[0]);
         }
       } catch (err) {
         console.error("Error fetching dashboard data:", err);
       }
     };
-    
+
     if (user) fetchDashboardData();
   }, [user]);
 
@@ -81,7 +76,8 @@ export default function Profile({ user, setUser, setAvatarTimestamp }) {
               }}
             >
               <Typography variant="body1" fontWeight="bold">
-                Action Required: Please complete your profile to access all features.
+                Action Required: Please complete your profile to access all
+                features.
               </Typography>
             </Box>
           )}
@@ -94,17 +90,28 @@ export default function Profile({ user, setUser, setAvatarTimestamp }) {
               mt: { xs: 8, md: 2 },
             }}
           >
-            <Typography variant="h4" sx={{ mb: 1, fontWeight: 700, color: "primary.main" }}>
+            <Typography
+              variant="h4"
+              sx={{ mb: 1, fontWeight: 700, color: "primary.main" }}
+            >
               My Profile
             </Typography>
 
-            <UserInfoCard user={user} setUser={setUser} setAvatarTimestamp={setAvatarTimestamp} />
+            <UserInfoCard
+              user={user}
+              setUser={setUser}
+              setAvatarTimestamp={setAvatarTimestamp}
+            />
 
             <Grid container spacing={3}>
               <Grid item xs={12} sm={6} md={4}>
                 <RecordCard
                   title="Medical Records"
-                  value={stats?.medical ? `${stats.medical.bloodGroup} | ${stats.medical.count} Records` : "Not set | 0 Records"}
+                  value={
+                    stats?.medical
+                      ? `${stats.medical.bloodGroup} | ${stats.medical.count} Records`
+                      : "Not set | 0 Records"
+                  }
                   icon={<MedicalServicesIcon />}
                   lastUpdated={formatDate(stats?.medical?.lastUpdated)}
                   color="error.main"
@@ -123,27 +130,16 @@ export default function Profile({ user, setUser, setAvatarTimestamp }) {
 
               <Grid item xs={12} sm={6} md={4}>
                 <RecordCard
-                  title="Property Records"
-                  value="0 Assets" 
-                  icon={<HomeWorkIcon />}
-                  lastUpdated="Not set"
-                  color="secondary.main"
-                />
-              </Grid>
-
-               
-              <Grid item xs={12} sm={6} md={4}>
-                <RecordCard
                   title="Tax Summary"
                   value={
-                    latestTax 
-                      ? `${latestTax.taxAmount.toLocaleString()} Tax` 
+                    latestTax
+                      ? `${latestTax.taxAmount.toLocaleString()} Tax`
                       : "0 Calculated"
                   }
                   icon={<PaymentsIcon />}
                   lastUpdated={
-                    latestTax 
-                      ? `${new Date(latestTax.updatedAt).getFullYear()}` 
+                    latestTax
+                      ? `${new Date(latestTax.updatedAt).getFullYear()}`
                       : "No submissions"
                   }
                   color="warning.main"

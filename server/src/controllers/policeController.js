@@ -1,5 +1,10 @@
 import PoliceRecord from "../models/PoliceRecord.js";
 import Citizen from "../models/Citizen.js";
+import {
+  sendPoliceVerificationEmail,
+  sendPoliceCaseAddedEmail,
+  sendPoliceCaseUpdatedEmail
+} from "../utils/googleEmailService.js";
 import Tesseract from "tesseract.js";
 import PDFDocument from "pdfkit";
 
@@ -67,6 +72,14 @@ export const updatePoliceVerification = async (req, res) => {
     if (notes !== undefined) record.notes = notes;
 
     await record.save();
+
+    if (verificationStatus) {
+      const citizen = await Citizen.findById(record.citizen);
+      if (citizen && citizen.email) {
+        sendPoliceVerificationEmail(citizen.email, citizen.name, verificationStatus);
+      }
+    }
+
     res.status(200).json({ message: "Verification status updated", record });
   } catch (error) {
     console.error("Error updating police verification:", error);
@@ -171,6 +184,11 @@ export const addPoliceCase = async (req, res) => {
 
     await record.save();
 
+    const citizen = await Citizen.findById(citizenId);
+    if (citizen && citizen.email) {
+      sendPoliceCaseAddedEmail(citizen.email, citizen.name);
+    }
+
     res
       .status(201)
       .json({ message: "Criminal case added successfully", record });
@@ -207,6 +225,11 @@ export const updatePoliceCaseStatus = async (req, res) => {
     }
 
     await record.save();
+
+    const citizenInfo = await Citizen.findById(citizenId);
+    if (citizenInfo && citizenInfo.email) {
+      sendPoliceCaseUpdatedEmail(citizenInfo.email, citizenInfo.name);
+    }
 
     res.status(200).json({ message: "Case updated successfully", record });
   } catch (error) {

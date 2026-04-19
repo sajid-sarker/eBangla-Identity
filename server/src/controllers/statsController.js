@@ -13,7 +13,7 @@ export const getDashboardStats = async (req, res) => {
     // Fetch all records in parallel for better performance
     const [medicalRecord, policeRecord, latestTaxRecord, educationRecords] =
       await Promise.all([
-        MedicalRecord.findOne({ citizen: userId }),
+        MedicalRecord.findOne({ user: userId }),
         PoliceRecord.findOne({ citizen: userId }),
         TaxRecord.findOne({ user: userId }).sort({ createdAt: -1 }),
         EducationRecord.find({ citizenId: userId })
@@ -32,7 +32,6 @@ export const getDashboardStats = async (req, res) => {
       medicalStats = {
         count:
           (medicalRecord.diagnoses?.length || 0) +
-          (medicalRecord.allergies?.length || 0) +
           (medicalRecord.vaccinations?.length || 0),
         bloodGroup: medicalRecord.bloodGroup || "Not set",
         lastUpdated: medicalRecord.updatedAt,

@@ -34,7 +34,7 @@ export const setOfficialIncome = async (req, res) => {
       },
       { 
         upsert: true, 
-        new: true, 
+        returnDocument: "after", 
         setDefaultsOnInsert: true 
       }
     );
@@ -84,7 +84,7 @@ export const updateTaxStatus = async (req, res) => {
     const record = await TaxRecord.findByIdAndUpdate(
       recordId,
       { status },
-      { new: true }
+      { returnDocument: "after" }
     );
 
     if (!record) return res.status(404).json({ message: "Record not found" });

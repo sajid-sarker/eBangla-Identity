@@ -73,7 +73,7 @@ export const updateMedicalRecord = async (req, res) => {
         vaccinations: cleanVaccinations,
         addedBy: req.user._id 
       },
-      { new: true, upsert: true }
+      { returnDocument: "after", upsert: true }
     );
 
     res.status(200).json({ success: true, message: "Medical History Updated Successfully!" });

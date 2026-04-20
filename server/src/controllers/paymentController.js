@@ -76,7 +76,7 @@ export const paymentSuccess = async (req, res) => {
         status: "Paid", 
         paidAt: new Date() 
       },
-      { new: true }
+      { returnDocument: "after" }
     );
 
     if (result) {

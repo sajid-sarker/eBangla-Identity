@@ -142,7 +142,7 @@ export const updateEducationStatus = async (req, res) => {
     const record = await EducationRecord.findByIdAndUpdate(
       id,
       { status },
-      { new: true },
+      { returnDocument: "after" },
     ).select("-document.data");
 
     if (!record) {

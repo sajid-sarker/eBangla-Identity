@@ -64,7 +64,7 @@ adminSchema.pre("save", async function () {
     const counter = await Counter.findOneAndUpdate(
       { id: prefix },
       { $inc: { seq: 1 } },
-      { new: true, upsert: true }
+      { returnDocument: "after", upsert: true }
     );
 
     const sequenceNum = counter.seq.toString().padStart(6, "0");

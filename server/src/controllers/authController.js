@@ -12,10 +12,12 @@ const generateTokenAndSetCookie = (res, userId, role = "citizen") => {
   });
   const maxAge = parseInt(JWT_EXPIRES_IN) * 60 * 1000;
   // Set JWT as httpOnly cookie
+  // In production the frontend and backend are on different domains, so
+  // SameSite must be 'none' (with Secure) for the cookie to be sent cross-origin.
   res.cookie("jwt", token, {
     httpOnly: true,
-    secure: NODE_ENV !== "development", // Set to true in production
-    sameSite: "strict", // Prevent CSRF attacks
+    secure: NODE_ENV !== "development",
+    sameSite: NODE_ENV === "production" ? "none" : "lax",
     maxAge: maxAge,
   });
   return token;
@@ -130,6 +132,11 @@ export const login = async (req, res) => {
 };
 
 export const logout = (req, res) => {
-  res.cookie("jwt", "", { httpOnly: true, expires: new Date(0) });
+  res.cookie("jwt", "", {
+    httpOnly: true,
+    secure: NODE_ENV !== "development",
+    sameSite: NODE_ENV === "production" ? "none" : "lax",
+    expires: new Date(0),
+  });
   res.status(200).json({ message: "Logged out" });
 };

@@ -22,12 +22,23 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(errorMiddleware); 
 
-// CORS configuration
+// CORS — allow only known origins so cross-origin cookies are accepted
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "http://localhost:5173",
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: true,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (e.g. mobile apps, curl, Postman)
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS: origin '${origin}' not allowed`));
+      }
+    },
     credentials: true,
   }),
 );
@@ -44,5 +55,6 @@ app.use("/api/report", reportRoutes);
 app.use("/api/score", scoreRoutes);
 app.use("/api/payment", paymentRoutes);
 
+app.use(errorMiddleware);
 
 export default app;

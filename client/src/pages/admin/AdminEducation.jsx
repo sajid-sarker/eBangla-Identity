@@ -15,7 +15,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import axios from "axios";
 import { API_BASE_URL } from "../../config/env";
 import { useAdmin } from "../../context/AdminContext";
-import SideMenu from "../../components/SideMenu";
+import SideMenu from "../../components/dashboard/SideMenu";
 import DetailedRecordCard from "../../components/dashboard/DetailedRecordCard";
 import AddQualificationModal from "../../components/education/AddQualificationModal";
 import AddIcon from "@mui/icons-material/Add";
@@ -26,7 +26,11 @@ export default function AdminEducation({ user }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [actionLoading, setActionLoading] = useState(null);
-  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "warning" });
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "warning",
+  });
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => setOpen(true);
@@ -38,10 +42,14 @@ export default function AdminEducation({ user }) {
     setLoading(true);
     setError("");
     try {
-      const res = await axios.get(`${API_BASE_URL}/education?citizenId=${selectedCitizen._id}`);
+      const res = await axios.get(
+        `${API_BASE_URL}/education?citizenId=${selectedCitizen._id}`,
+      );
       setRecords(res.data);
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to fetch education records");
+      setError(
+        err.response?.data?.message || "Failed to fetch education records",
+      );
     } finally {
       setLoading(false);
     }
@@ -54,10 +62,12 @@ export default function AdminEducation({ user }) {
   const handleStatusUpdate = async (id, status) => {
     setActionLoading(id);
     try {
-      await axios.patch(`${API_BASE_URL}/education/admin/${id}/status`, { status });
+      await axios.patch(`${API_BASE_URL}/education/admin/${id}/status`, {
+        status,
+      });
       // Update local state
       setRecords((prev) =>
-        prev.map((rec) => (rec._id === id ? { ...rec, status } : rec))
+        prev.map((rec) => (rec._id === id ? { ...rec, status } : rec)),
       );
     } catch (err) {
       alert(err.response?.data?.message || "Failed to update status");
@@ -90,7 +100,10 @@ export default function AdminEducation({ user }) {
           minHeight: "100vh",
         }}
       >
-        <Typography variant="h4" sx={{ mb: 4, fontWeight: 700, color: "primary.main" }}>
+        <Typography
+          variant="h4"
+          sx={{ mb: 4, fontWeight: 700, color: "primary.main" }}
+        >
           Education Records Management
         </Typography>
 
@@ -100,7 +113,8 @@ export default function AdminEducation({ user }) {
               No citizen selected.
             </Typography>
             <Typography variant="body2" sx={{ mt: 1 }}>
-              Please go to the <strong>Admin Dashboard</strong> and search for a citizen by NID to manage their records.
+              Please go to the <strong>Admin Dashboard</strong> and search for a
+              citizen by NID to manage their records.
             </Typography>
           </Paper>
         ) : (
@@ -154,12 +168,20 @@ export default function AdminEducation({ user }) {
             ) : error ? (
               <Alert severity="error">{error}</Alert>
             ) : records.length === 0 ? (
-              <Alert severity="info">No education records found for this citizen.</Alert>
+              <Alert severity="info">
+                No education records found for this citizen.
+              </Alert>
             ) : (
               <Grid container spacing={3}>
                 {records.map((record) => (
                   <Grid item xs={12} md={6} lg={4} key={record._id}>
-                    <Box sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+                    <Box
+                      sx={{
+                        height: "100%",
+                        display: "flex",
+                        flexDirection: "column",
+                      }}
+                    >
                       <DetailedRecordCard
                         title={record.qualification}
                         subtitle={record.institution}
@@ -170,8 +192,8 @@ export default function AdminEducation({ user }) {
                           record.status === "Verified"
                             ? "success"
                             : record.status === "Rejected"
-                            ? "error"
-                            : "warning"
+                              ? "error"
+                              : "warning"
                         }
                         details={[
                           {
@@ -211,7 +233,9 @@ export default function AdminEducation({ user }) {
                                 color="success"
                                 variant="contained"
                                 startIcon={<CheckCircleIcon />}
-                                onClick={() => handleStatusUpdate(record._id, "Verified")}
+                                onClick={() =>
+                                  handleStatusUpdate(record._id, "Verified")
+                                }
                                 disabled={actionLoading === record._id}
                                 sx={{ fontWeight: 600 }}
                               >
@@ -222,7 +246,9 @@ export default function AdminEducation({ user }) {
                                 color="error"
                                 variant="outlined"
                                 startIcon={<CancelIcon />}
-                                onClick={() => handleStatusUpdate(record._id, "Rejected")}
+                                onClick={() =>
+                                  handleStatusUpdate(record._id, "Rejected")
+                                }
                                 disabled={actionLoading === record._id}
                                 sx={{ fontWeight: 600 }}
                               >
@@ -235,7 +261,9 @@ export default function AdminEducation({ user }) {
                               size="small"
                               color="error"
                               variant="text"
-                              onClick={() => handleStatusUpdate(record._id, "Rejected")}
+                              onClick={() =>
+                                handleStatusUpdate(record._id, "Rejected")
+                              }
                               disabled={actionLoading === record._id}
                             >
                               Revoke
@@ -246,7 +274,9 @@ export default function AdminEducation({ user }) {
                               size="small"
                               color="success"
                               variant="text"
-                              onClick={() => handleStatusUpdate(record._id, "Verified")}
+                              onClick={() =>
+                                handleStatusUpdate(record._id, "Verified")
+                              }
                               disabled={actionLoading === record._id}
                             >
                               Re-verify

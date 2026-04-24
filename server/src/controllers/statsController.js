@@ -73,12 +73,6 @@ export const getDashboardStats = async (req, res) => {
       };
     }
 
-    // Family stats from req.user
-    const familyStats = {
-      count: req.user.familyMembers?.length || 0,
-      lastUpdated: req.user.updatedAt,
-    };
-
     // Format education stats
     let educationStats = {
       count: educationRecords.length,
@@ -91,7 +85,6 @@ export const getDashboardStats = async (req, res) => {
     res.status(200).json({
       medical: medicalStats,
       police: policeStats,
-      family: familyStats,
       tax: taxStats,
       education: educationStats,
     });

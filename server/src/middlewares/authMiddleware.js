@@ -62,10 +62,8 @@ export const adminOnly = (req, res, next) => {
   }
 };
 
-/**
- * ADDED: authorize middleware
- * Permits access based on specific roles (e.g., 'medical', 'police')
- */
+
+// Permits access based on specific roles (e.g., 'medical', 'police')
 export const authorize = (...roles) => {
   return (req, res, next) => {
     // Check if user exists and if their role is in the allowed list

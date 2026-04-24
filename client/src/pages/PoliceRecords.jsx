@@ -11,7 +11,7 @@ import Button from "@mui/material/Button";
 import axios from "axios";
 import { API_BASE_URL } from "../config/env";
 
-import SideMenu from "../components/SideMenu";
+import SideMenu from "../components/dashboard/SideMenu";
 import DetailedRecordCard from "../components/dashboard/DetailedRecordCard";
 
 import LocalPoliceIcon from "@mui/icons-material/LocalPolice";
@@ -41,7 +41,14 @@ export default function PoliceRecords({ user }) {
 
   if (loading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -89,22 +96,37 @@ export default function PoliceRecords({ user }) {
               mt: { xs: 8, md: 2 },
             }}
           >
-            <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+            >
               <Box>
-                <Typography variant="h4" sx={{ fontWeight: 700, color: "primary.main", mb: 1 }}>
+                <Typography
+                  variant="h4"
+                  sx={{ fontWeight: 700, color: "primary.main", mb: 1 }}
+                >
                   Police Records
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
-                  Official criminal history and active legal cases linked to your NID.
+                  Official criminal history and active legal cases linked to
+                  your NID.
                 </Typography>
               </Box>
-              <Button variant="contained" color="primary" onClick={handleDownload}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleDownload}
+              >
                 Download Report
               </Button>
             </Box>
 
             {!record && !error && (
-              <Alert severity="success" icon={<SecurityIcon fontSize="inherit" />}>
+              <Alert
+                severity="success"
+                icon={<SecurityIcon fontSize="inherit" />}
+              >
                 No criminal records or active cases found. Your record is clear.
               </Alert>
             )}
@@ -113,7 +135,16 @@ export default function PoliceRecords({ user }) {
 
             {record && (
               <Box>
-                <Typography variant="h6" sx={{ mb: 2, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    mb: 2,
+                    fontWeight: 700,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
                   <GavelIcon color="primary" /> Legal Cases
                 </Typography>
                 <Grid container spacing={3}>
@@ -125,10 +156,12 @@ export default function PoliceRecords({ user }) {
                       dismissed: "default",
                       closed: "success",
                       acquitted: "success",
-                      convicted: "error"
+                      convicted: "error",
                     };
                     const color = statusColors[caseItem.status] || "primary";
-                    const formattedStatus = caseItem.status.replace("_", " ").toUpperCase();
+                    const formattedStatus = caseItem.status
+                      .replace("_", " ")
+                      .toUpperCase();
 
                     return (
                       <Grid item xs={12} md={6} lg={4} key={index}>
@@ -141,7 +174,10 @@ export default function PoliceRecords({ user }) {
                           color={color}
                           details={[
                             { label: "Station", value: caseItem.station },
-                            { label: "Verdict", value: caseItem.verdict || "Pending" }
+                            {
+                              label: "Verdict",
+                              value: caseItem.verdict || "Pending",
+                            },
                           ]}
                         />
                       </Grid>

@@ -12,13 +12,10 @@ export const getEducationRecords = async (req, res) => {
   try {
     let targetCitizenId = req.user._id;
 
-    // If user is admin and specifies a citizenId in the query, fetch for that citizen
     if (req.user.isAdmin && req.query.citizenId) {
       targetCitizenId = req.query.citizenId;
     }
 
-    // Fetch records sorted by passingYear in descending order
-    // Exclude the document data buffer to significantly reduce payload size and loading time
     const records = await EducationRecord.find({ citizenId: targetCitizenId })
       .select("-document.data")
       .sort({

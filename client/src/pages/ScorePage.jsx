@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Sector } from "recharts";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  Sector,
+} from "recharts";
 import {
   Box,
   Typography,
@@ -13,7 +20,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { API_BASE_URL } from "../config/env";
-import SideMenu from "../components/SideMenu";
+import SideMenu from "../components/dashboard/SideMenu";
 
 const ScorePage = ({ user }) => {
   const [data, setData] = useState(null);
@@ -124,7 +131,7 @@ const ScorePage = ({ user }) => {
   const onPieEnter = (_, index) => {
     setActiveIndex(index);
   };
-  
+
   const onPieLeave = () => {
     setActiveIndex(-1);
   };
@@ -142,7 +149,7 @@ const ScorePage = ({ user }) => {
           p: { xs: 2, md: 5 }, // Increased padding for better breathing room
           overflow: "auto",
           display: "flex", // Centers the max-width block inside
-          justifyContent: "center"
+          justifyContent: "center",
         }}
       >
         {/* Main Container - Balanced centering and wider footprint */}
@@ -178,10 +185,20 @@ const ScorePage = ({ user }) => {
                   borderRadius: 0,
                   bgcolor: "white",
                   position: "relative",
-                  border: "2px solid #6699CC" 
+                  border: "2px solid #6699CC",
                 }}
               >
-                <Typography variant="h6" sx={{ fontWeight: 800, mb: 1, color: "black", position: "absolute", top: 16, left: 16 }}>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontWeight: 800,
+                    mb: 1,
+                    color: "black",
+                    position: "absolute",
+                    top: 16,
+                    left: 16,
+                  }}
+                >
                   Score Breakdown
                 </Typography>
 
@@ -198,7 +215,7 @@ const ScorePage = ({ user }) => {
                       flexDirection: "column",
                       alignItems: "center",
                       flex: 1, // Fluid grow instead of hard crushing 60%
-                      minWidth: "250px" // Ensure SVG gets at least 250px to render full circle safely
+                      minWidth: "250px", // Ensure SVG gets at least 250px to render full circle safely
                     }}
                   >
                     <Box sx={{ width: "100%", height: 260 }}>
@@ -214,18 +231,36 @@ const ScorePage = ({ user }) => {
                             dataKey="value"
                             onMouseEnter={onPieEnter}
                             onMouseLeave={onPieLeave}
-                            label={({ cx, cy, midAngle, innerRadius, outerRadius, percent, name }) => {
+                            label={({
+                              cx,
+                              cy,
+                              midAngle,
+                              innerRadius,
+                              outerRadius,
+                              percent,
+                              name,
+                            }) => {
                               const RADIAN = Math.PI / 180;
-                              const radius = innerRadius + (outerRadius - innerRadius) * 0.55; 
-                              const x = cx + radius * Math.cos(-midAngle * RADIAN);
-                              const y = cy + radius * Math.sin(-midAngle * RADIAN);
+                              const radius =
+                                innerRadius +
+                                (outerRadius - innerRadius) * 0.55;
+                              const x =
+                                cx + radius * Math.cos(-midAngle * RADIAN);
+                              const y =
+                                cy + radius * Math.sin(-midAngle * RADIAN);
                               const color = getFillColor(name);
-                              
-                              if (percent === 0) return null; 
+
+                              if (percent === 0) return null;
 
                               return (
                                 <g>
-                                  <rect x={x - 20} y={y - 8} width={14} height={14} fill={color} />
+                                  <rect
+                                    x={x - 20}
+                                    y={y - 8}
+                                    width={14}
+                                    height={14}
+                                    fill={color}
+                                  />
                                   <text
                                     x={x - 2}
                                     y={y}
@@ -235,7 +270,9 @@ const ScorePage = ({ user }) => {
                                     fontWeight="800"
                                     fontSize={13}
                                   >
-                                    {name.includes("Tax") && percent < 0.2 ? "Tax Unpaid" : `${(percent * 100).toFixed(1)}%`}
+                                    {name.includes("Tax") && percent < 0.2
+                                      ? "Tax Unpaid"
+                                      : `${(percent * 100).toFixed(1)}%`}
                                   </text>
                                 </g>
                               );
@@ -246,8 +283,8 @@ const ScorePage = ({ user }) => {
                             {chartData.map((entry, index) => (
                               <Cell
                                 key={`cell-${index}`}
-                                fill="#D0A9A9" 
-                                stroke="black" 
+                                fill="#D0A9A9"
+                                stroke="black"
                                 strokeWidth={1}
                                 style={{ outline: "none" }}
                               />
@@ -304,7 +341,7 @@ const ScorePage = ({ user }) => {
                       flexDirection: "column",
                       alignItems: "center",
                       justifyContent: "center",
-                      pl: { xs: 0, lg: 2 } // Prevent crowding the graph
+                      pl: { xs: 0, lg: 2 }, // Prevent crowding the graph
                     }}
                   >
                     <Typography
@@ -329,7 +366,7 @@ const ScorePage = ({ user }) => {
                         fontWeight: 800,
                         width: "150px",
                         textAlign: "center",
-                        borderRadius: 0, 
+                        borderRadius: 0,
                       }}
                     >
                       {data.status}
@@ -340,14 +377,14 @@ const ScorePage = ({ user }) => {
                       sx={{
                         width: "150px",
                         height: 48,
-                        backgroundColor: "#EAE6E6", 
+                        backgroundColor: "#EAE6E6",
                         display: "flex",
                       }}
                     >
                       <Box
                         sx={{
                           width: `${data.score}%`,
-                          backgroundColor: "#3A4595", 
+                          backgroundColor: "#3A4595",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -366,30 +403,39 @@ const ScorePage = ({ user }) => {
 
             {/* Right Side: Score Breakdown List */}
             <Grid item xs={12} md={5} sx={{ display: "flex" }}>
-              <Paper sx={{ 
-                p: 4, 
-                width: "100%", 
-                backgroundColor: "#FCF5F5",
-                display: "flex",
-                flexDirection: "column",
-                borderRadius: 0,
-                border: "none",
-                boxShadow: "0px 4px 10px rgba(0,0,0,0.05)"
-              }}>
-                <Typography variant="h6" sx={{ fontWeight: 800, mb: 4, color: "black" }}>
+              <Paper
+                sx={{
+                  p: 4,
+                  width: "100%",
+                  backgroundColor: "#FCF5F5",
+                  display: "flex",
+                  flexDirection: "column",
+                  borderRadius: 0,
+                  border: "none",
+                  boxShadow: "0px 4px 10px rgba(0,0,0,0.05)",
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  sx={{ fontWeight: 800, mb: 4, color: "black" }}
+                >
                   Score Breakdown
                 </Typography>
 
                 <Stack spacing={4} sx={{ flexGrow: 1, mt: 2 }}>
                   {data.breakdown.map((item, index) => {
-                     return (
-                       <Typography
-                         key={index}
-                         sx={{ fontSize: "16px", color: "black", fontWeight: 500 }}
-                       >
-                         {item}
-                       </Typography>
-                     );
+                    return (
+                      <Typography
+                        key={index}
+                        sx={{
+                          fontSize: "16px",
+                          color: "black",
+                          fontWeight: 500,
+                        }}
+                      >
+                        {item}
+                      </Typography>
+                    );
                   })}
                 </Stack>
               </Paper>

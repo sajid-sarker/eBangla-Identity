@@ -13,7 +13,7 @@ import axios from "axios";
 import { API_BASE_URL } from "../config/env";
 
 import Button from "@mui/material/Button";
-import SideMenu from "../components/SideMenu";
+import SideMenu from "../components/dashboard/SideMenu";
 import DetailedRecordCard from "../components/dashboard/DetailedRecordCard";
 import AddQualificationModal from "../components/education/AddQualificationModal";
 

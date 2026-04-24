@@ -18,14 +18,13 @@ import Report from "./pages/ReportPage";
 import ScorePage from "./pages/ScorePage";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminMedical from "./pages/admin/AdminMedical"; 
+import AdminMedical from "./pages/admin/AdminMedical";
 import AdminPolice from "./pages/admin/AdminPolice";
 import AdminCitizenPoliceProfile from "./pages/admin/AdminCitizenPoliceProfile";
 import AdminTax from "./pages/admin/AdminTax";
 import AdminEducation from "./pages/admin/AdminEducation";
 import { AdminProvider } from "./context/AdminContext";
 
-// Configure axios defaults
 axios.defaults.withCredentials = true;
 
 const ProtectedRoute = ({
@@ -46,7 +45,10 @@ const ProtectedRoute = ({
     if (!user.isAdmin) {
       return <Navigate to="/" replace />;
     }
-    if (allowedAdminRoles.length > 0 && !allowedAdminRoles.includes(user.role)) {
+    if (
+      allowedAdminRoles.length > 0 &&
+      !allowedAdminRoles.includes(user.role)
+    ) {
       return <Navigate to="/admin/dashboard" replace />;
     }
   }
@@ -153,7 +155,6 @@ function App() {
             }
           />
 
-          {/* FIXED: Changed path from /tax to /tax-records to match  redirects */}
           <Route
             path="/tax-records"
             element={
@@ -162,7 +163,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          
+
           {/* Keep /tax as a secondary redirect so old links don't break */}
           <Route path="/tax" element={<Navigate to="/tax-records" replace />} />
 
@@ -247,7 +248,12 @@ function App() {
                   <Route
                     path="cases"
                     element={
-                      <ProtectedRoute user={user} loading={loading} requireAdmin={true} allowedAdminRoles={["police", "superuser"]}>
+                      <ProtectedRoute
+                        user={user}
+                        loading={loading}
+                        requireAdmin={true}
+                        allowedAdminRoles={["police", "superuser"]}
+                      >
                         <AdminCitizenPoliceProfile user={user} />
                       </ProtectedRoute>
                     }
@@ -255,7 +261,12 @@ function App() {
                   <Route
                     path="police/citizen/:id"
                     element={
-                      <ProtectedRoute user={user} loading={loading} requireAdmin={true} allowedAdminRoles={["police", "superuser"]}>
+                      <ProtectedRoute
+                        user={user}
+                        loading={loading}
+                        requireAdmin={true}
+                        allowedAdminRoles={["police", "superuser"]}
+                      >
                         <AdminCitizenPoliceProfile user={user} />
                       </ProtectedRoute>
                     }

@@ -37,11 +37,6 @@ export const getAdminMedicalRecordByCitizen = async (req, res) => {
       return res.status(200).json(sortedRecord);
     }
     
-    // Send the generic informative notification email to the citizen
-    if (citizen && citizen.email) {
-      sendMedicalUpdateEmail(citizen.email, citizen.name);
-    }
-    
     res.status(200).json({});
   } catch (error) {
     console.error("Fetch Error:", error.message);
@@ -75,6 +70,11 @@ export const updateMedicalRecord = async (req, res) => {
       },
       { returnDocument: "after", upsert: true }
     );
+
+    // Send email notification to the citizen
+    if (citizen && citizen.email) {
+      sendMedicalUpdateEmail(citizen.email, citizen.name);
+    }
 
     res.status(200).json({ success: true, message: "Medical History Updated Successfully!" });
   } catch (error) {

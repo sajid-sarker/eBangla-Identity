@@ -7,7 +7,7 @@ import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import SideMenu from "../components/SideMenu";
+import SideMenu from "../components/dashboard/SideMenu";
 import UserInfoCard from "../components/dashboard/UserInfoCard";
 import RecordCard from "../components/dashboard/RecordCard";
 import MedicalServicesIcon from "@mui/icons-material/MedicalServices";

@@ -1,11 +1,28 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
-  Box, Typography, Paper, Table, TableBody, TableCell, TableContainer,
-  TableHead, TableRow, Button, Dialog, DialogTitle, DialogContent,
-  DialogActions, TextField, CircularProgress, MenuItem, Stack, Chip, Divider
+  Box,
+  Typography,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  CircularProgress,
+  MenuItem,
+  Stack,
+  Chip,
+  Divider,
 } from "@mui/material";
-import SideMenu from "../../components/SideMenu";
+import SideMenu from "../../components/dashboard/SideMenu";
 import { API_BASE_URL } from "../../config/env";
 import { useAdmin } from "../../context/AdminContext";
 
@@ -31,11 +48,15 @@ export default function AdminPolice({ user }) {
     }
     try {
       setLoading(true);
-      const res = await axios.get(`${API_BASE_URL}/police/citizen/${selectedCitizen._id}`);
-      setUsers([{
-        citizen: res.data.citizen,
-        policeRecord: res.data
-      }]);
+      const res = await axios.get(
+        `${API_BASE_URL}/police/citizen/${selectedCitizen._id}`,
+      );
+      setUsers([
+        {
+          citizen: res.data.citizen,
+          policeRecord: res.data,
+        },
+      ]);
     } catch (err) {
       console.error("Failed to fetch users", err);
     } finally {
@@ -64,7 +85,10 @@ export default function AdminPolice({ user }) {
 
     setOcrLoading(true);
     try {
-      const res = await axios.post(`${API_BASE_URL}/police/upload-nid/${selectedUser.citizen._id}`, formData);
+      const res = await axios.post(
+        `${API_BASE_URL}/police/upload-nid/${selectedUser.citizen._id}`,
+        formData,
+      );
       setOcrText(res.data.extractedText);
       alert("NID Extracted Successfully");
       fetchUsers();
@@ -77,12 +101,16 @@ export default function AdminPolice({ user }) {
   };
 
   const handleStatusUpdate = async () => {
-    if (!selectedUser.policeRecord?._id) return alert("Upload NID first to create record");
+    if (!selectedUser.policeRecord?._id)
+      return alert("Upload NID first to create record");
     try {
-      await axios.put(`${API_BASE_URL}/police/update/${selectedUser.policeRecord._id}`, {
-        verificationStatus: verStatus,
-        notes
-      });
+      await axios.put(
+        `${API_BASE_URL}/police/update/${selectedUser.policeRecord._id}`,
+        {
+          verificationStatus: verStatus,
+          notes,
+        },
+      );
       alert("Updated successfully");
       setVerifyModalOpen(false);
       fetchUsers();
@@ -92,16 +120,31 @@ export default function AdminPolice({ user }) {
   };
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f5f5f5" }}>
+    <Box
+      sx={{ display: "flex", minHeight: "100vh", backgroundColor: "#f5f5f5" }}
+    >
       <SideMenu user={user} />
-      <Box sx={{ flexGrow: 1, p: 4, display: "flex", flexDirection: "column", gap: 3 }}>
+      <Box
+        sx={{
+          flexGrow: 1,
+          p: 4,
+          display: "flex",
+          flexDirection: "column",
+          gap: 3,
+        }}
+      >
         <Typography variant="h4" sx={{ fontWeight: 700, color: "#1D237A" }}>
           Police Verification Hub
         </Typography>
 
         <Paper sx={{ p: 2, borderRadius: 2, flexGrow: 1 }}>
           {loading ? (
-            <Box display="flex" justifyContent="center" alignItems="center" flexGrow={1}>
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              flexGrow={1}
+            >
               <CircularProgress />
             </Box>
           ) : (
@@ -120,33 +163,51 @@ export default function AdminPolice({ user }) {
                     <TableRow>
                       <TableCell colSpan={4} align="center" sx={{ py: 4 }}>
                         <Typography color="text.secondary">
-                          Please search and select a specific citizen from the Home Dashboard first.
+                          Please search and select a specific citizen from the
+                          Home Dashboard first.
                         </Typography>
                       </TableCell>
                     </TableRow>
-                  ) : users.map((row) => (
-                    <TableRow key={row.citizen._id}>
-                      <TableCell>{row.citizen.name}</TableCell>
-                      <TableCell>{row.citizen.nid || "N/A"}</TableCell>
-                      <TableCell>
-                        <Chip
-                          label={row.policeRecord?.verificationStatus || "Pending"}
-                          color={
-                            row.policeRecord?.verificationStatus === "Verified" ? "success" :
-                            row.policeRecord?.verificationStatus === "Rejected" ? "error" : "warning"
-                          }
-                          size="small"
-                        />
-                      </TableCell>
-                      <TableCell align="right">
-                        <Stack direction="row" spacing={1} justifyContent="flex-end">
-                          <Button variant="outlined" size="small" onClick={() => handleOpenVerify(row)}>
-                            Verify NID
-                          </Button>
-                        </Stack>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  ) : (
+                    users.map((row) => (
+                      <TableRow key={row.citizen._id}>
+                        <TableCell>{row.citizen.name}</TableCell>
+                        <TableCell>{row.citizen.nid || "N/A"}</TableCell>
+                        <TableCell>
+                          <Chip
+                            label={
+                              row.policeRecord?.verificationStatus || "Pending"
+                            }
+                            color={
+                              row.policeRecord?.verificationStatus ===
+                              "Verified"
+                                ? "success"
+                                : row.policeRecord?.verificationStatus ===
+                                    "Rejected"
+                                  ? "error"
+                                  : "warning"
+                            }
+                            size="small"
+                          />
+                        </TableCell>
+                        <TableCell align="right">
+                          <Stack
+                            direction="row"
+                            spacing={1}
+                            justifyContent="flex-end"
+                          >
+                            <Button
+                              variant="outlined"
+                              size="small"
+                              onClick={() => handleOpenVerify(row)}
+                            >
+                              Verify NID
+                            </Button>
+                          </Stack>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -155,14 +216,29 @@ export default function AdminPolice({ user }) {
       </Box>
 
       {/* Verify Modal */}
-      <Dialog open={verifyModalOpen} onClose={() => setVerifyModalOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog
+        open={verifyModalOpen}
+        onClose={() => setVerifyModalOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle>Verify NID - {selectedUser?.citizen.name}</DialogTitle>
         <DialogContent>
           <Box sx={{ my: 2 }}>
-            <Typography variant="subtitle2" sx={{ mb: 1 }}>Upload NID Image for OCR</Typography>
+            <Typography variant="subtitle2" sx={{ mb: 1 }}>
+              Upload NID Image for OCR
+            </Typography>
             <Stack direction="row" spacing={2} alignItems="center">
-              <input type="file" accept="image/*" onChange={(e) => setNidFile(e.target.files[0])} />
-              <Button variant="contained" onClick={handleNidUpload} disabled={ocrLoading || !nidFile}>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setNidFile(e.target.files[0])}
+              />
+              <Button
+                variant="contained"
+                onClick={handleNidUpload}
+                disabled={ocrLoading || !nidFile}
+              >
                 {ocrLoading ? <CircularProgress size={24} /> : "Run OCR"}
               </Button>
             </Stack>
@@ -200,7 +276,13 @@ export default function AdminPolice({ user }) {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setVerifyModalOpen(false)}>Cancel</Button>
-          <Button onClick={handleStatusUpdate} variant="contained" color="primary">Save Changes</Button>
+          <Button
+            onClick={handleStatusUpdate}
+            variant="contained"
+            color="primary"
+          >
+            Save Changes
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>

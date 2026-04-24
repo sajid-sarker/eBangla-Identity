@@ -9,7 +9,7 @@ import Avatar from "@mui/material/Avatar";
 import Divider from "@mui/material/Divider";
 import Alert from "@mui/material/Alert";
 import CircularProgress from "@mui/material/CircularProgress";
-import SideMenu from "../../components/SideMenu";
+import SideMenu from "../../components/dashboard/SideMenu";
 import axios from "axios";
 import { API_BASE_URL } from "../../config/env";
 import { useAdmin } from "../../context/AdminContext";
@@ -197,7 +197,6 @@ export default function AdminDashboard({ user }) {
                           ? "Selected"
                           : "Select Citizen"}
                       </Button>
-
                     </Box>
                   </Paper>
                 </Box>

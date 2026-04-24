@@ -36,7 +36,6 @@ router.post("/cancel", paymentCancel);
 
 // Optional: IPN (Instant Payment Notification) for background verification
 router.post("/ipn", (req, res) => {
-    console.log("IPN Received:", req.body);
     res.status(200).send("IPN Received");
 });
 

@@ -17,7 +17,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { API_BASE_URL } from "../config/env";
-import SideMenu from "../components/SideMenu";
+import SideMenu from "../components/dashboard/SideMenu";
 
 const ReportPage = ({ user }) => {
   const navigate = useNavigate();
@@ -403,7 +403,9 @@ const ReportPage = ({ user }) => {
                               }}
                             >
                               <TableCell align="center">
-                                {row.degreeName ? `${row.qualification} - ${row.degreeName}` : row.qualification}
+                                {row.degreeName
+                                  ? `${row.qualification} - ${row.degreeName}`
+                                  : row.qualification}
                               </TableCell>
                               <TableCell align="center">
                                 {row.passingYear || row.year}

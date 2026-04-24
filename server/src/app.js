@@ -27,6 +27,9 @@ app.use(cookieParser());
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   "http://localhost:5173",
+  // SSLCommerz callback origins (sandbox + production)
+  "https://sandbox.sslcommerz.com",
+  "https://securepay.sslcommerz.com",
 ].filter(Boolean);
 
 app.use(

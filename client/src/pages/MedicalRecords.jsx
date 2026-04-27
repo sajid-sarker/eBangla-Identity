@@ -44,9 +44,31 @@ export default function MedicalRecords({ user }) {
   return (
     <Box sx={{ display: "flex", minHeight: "100vh" }}>
       <SideMenu user={user} />
-      <Box component="main" sx={{ flexGrow: 1, p: 4, bgcolor: "#f8fafd" }}>
-        <Stack spacing={4} sx={{ maxWidth: "1200px", margin: "0 auto" }}>
-          <Typography variant="h4" sx={{ fontWeight: 800, color: "#05339C" }}>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: { xs: 2, md: 4 },
+          bgcolor: "#f8fafd",
+          overflow: "auto",
+        }}
+      >
+        <Stack
+          spacing={4}
+          sx={{
+            maxWidth: "1200px",
+            margin: "0 auto",
+            mt: { xs: 8, md: 2 },
+          }}
+        >
+          <Typography
+            variant="h4"
+            sx={{
+              fontWeight: 800,
+              color: "#05339C",
+              fontSize: { xs: "1.75rem", sm: "2.125rem" },
+            }}
+          >
             Medical Records
           </Typography>
 
@@ -60,11 +82,13 @@ export default function MedicalRecords({ user }) {
               <Paper
                 variant="outlined"
                 sx={{
-                  p: 4,
+                  p: { xs: 2, sm: 4 },
                   borderRadius: 3,
                   display: "flex",
+                  flexDirection: { xs: "column", sm: "row" },
                   justifyContent: "space-around",
                   alignItems: "center",
+                  gap: { xs: 3, sm: 0 },
                 }}
               >
                 <Box textAlign="center">
@@ -81,7 +105,14 @@ export default function MedicalRecords({ user }) {
                     {record.bloodGroup}
                   </Typography>
                 </Box>
-                <Divider orientation="vertical" flexItem />
+                <Divider
+                  orientation="vertical"
+                  flexItem
+                  sx={{ display: { xs: "none", sm: "block" } }}
+                />
+                <Divider
+                  sx={{ display: { xs: "block", sm: "none" }, width: "100%" }}
+                />
                 <Box textAlign="center">
                   <Typography
                     variant="caption"
@@ -95,7 +126,14 @@ export default function MedicalRecords({ user }) {
                     {record.height} cm
                   </Typography>
                 </Box>
-                <Divider orientation="vertical" flexItem />
+                <Divider
+                  orientation="vertical"
+                  flexItem
+                  sx={{ display: { xs: "none", sm: "block" } }}
+                />
+                <Divider
+                  sx={{ display: { xs: "block", sm: "none" }, width: "100%" }}
+                />
                 <Box textAlign="center">
                   <Typography
                     variant="caption"

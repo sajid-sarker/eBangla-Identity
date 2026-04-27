@@ -85,7 +85,7 @@ export default function PoliceRecords({ user }) {
               ? `rgba(${theme.vars.palette.background.defaultChannel} / 1)`
               : alpha(theme.palette.background.default, 1),
             overflow: "auto",
-            p: 3,
+            p: { xs: 2, md: 3 },
           })}
         >
           <Stack
@@ -97,14 +97,23 @@ export default function PoliceRecords({ user }) {
             }}
           >
             <Box
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
+              sx={{
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
+                justifyContent: "space-between",
+                alignItems: { xs: "flex-start", sm: "center" },
+                gap: 2,
+              }}
             >
               <Box>
                 <Typography
                   variant="h4"
-                  sx={{ fontWeight: 700, color: "primary.main", mb: 1 }}
+                  sx={{
+                    fontWeight: 700,
+                    color: "primary.main",
+                    mb: 1,
+                    fontSize: { xs: "1.75rem", sm: "2.125rem" },
+                  }}
                 >
                   Police Records
                 </Typography>
@@ -117,6 +126,7 @@ export default function PoliceRecords({ user }) {
                 variant="contained"
                 color="primary"
                 onClick={handleDownload}
+                sx={{ width: { xs: "100%", sm: "auto" } }}
               >
                 Download Report
               </Button>

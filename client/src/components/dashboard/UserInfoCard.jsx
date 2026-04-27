@@ -86,7 +86,11 @@ export default function UserInfoCard({ user, setUser, setAvatarTimestamp }) {
       // Upload pending picture first (if user selected one)
       if (pendingPicture) {
         const formDataImg = new FormData();
-        formDataImg.append("profilePicture", pendingPicture.blob, "profile.jpg");
+        formDataImg.append(
+          "profilePicture",
+          pendingPicture.blob,
+          "profile.jpg",
+        );
         await axios.post(`${API_BASE_URL}/user/profile-picture`, formDataImg, {
           headers: { "Content-Type": "multipart/form-data" },
         });
@@ -130,7 +134,9 @@ export default function UserInfoCard({ user, setUser, setAvatarTimestamp }) {
     if (!file) return;
 
     if (file.size > 512 * 1024) {
-      alert("Image must be smaller than 512kB. Please choose a smaller file or compress it first.");
+      alert(
+        "Image must be smaller than 512kB. Please choose a smaller file or compress it first.",
+      );
       return;
     }
 
@@ -155,7 +161,9 @@ export default function UserInfoCard({ user, setUser, setAvatarTimestamp }) {
     setRawImageSrc(null);
 
     if (croppedBlob.size > 512 * 1024) {
-      alert("The cropped image exceeds 512kB. Please choose a smaller or lower-resolution image.");
+      alert(
+        "The cropped image exceeds 512kB. Please choose a smaller or lower-resolution image.",
+      );
       return;
     }
 
@@ -176,23 +184,39 @@ export default function UserInfoCard({ user, setUser, setAvatarTimestamp }) {
 
   // Show local preview if user picked a new picture but hasn't saved yet;
   // otherwise show the server-stored picture with cache-busting timestamp
-  const avatarSrc = pendingPicture?.previewUrl
-    ?? (user?._id ? `${API_BASE_URL}/user/profile-picture/${user._id}?t=${avatarTimestamp}` : undefined);
+  const avatarSrc =
+    pendingPicture?.previewUrl ??
+    (user?._id
+      ? `${API_BASE_URL}/user/profile-picture/${user._id}?t=${avatarTimestamp}`
+      : undefined);
 
   return (
     <Card variant="outlined" sx={{ width: "100%", minWidth: 280, mb: 2 }}>
-      <CardContent sx={{ p: 3 }}>
+      <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
         <Box
           sx={{
             display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
             justifyContent: "space-between",
-            alignItems: "flex-start",
+            alignItems: { xs: "center", sm: "flex-start" },
+            gap: { xs: 2, sm: 0 },
             mb: 3,
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              alignItems: "center",
+              gap: 2,
+              textAlign: { xs: "center", sm: "left" },
+            }}
+          >
             {/* Avatar with edit overlay (only visible in edit mode) */}
-            <Tooltip title={isEditing ? "Change Profile Picture" : ""} placement="bottom">
+            <Tooltip
+              title={isEditing ? "Change Profile Picture" : ""}
+              placement="bottom"
+            >
               <Box
                 onClick={handleAvatarClick}
                 sx={{
@@ -250,7 +274,7 @@ export default function UserInfoCard({ user, setUser, setAvatarTimestamp }) {
                   value={formData.name}
                   onChange={handleChange}
                   size="small"
-                  sx={{ mb: 1 }}
+                  sx={{ mb: 1, width: "100%" }}
                 />
               ) : (
                 <Typography variant="h5" sx={{ fontWeight: 600 }}>
@@ -264,7 +288,13 @@ export default function UserInfoCard({ user, setUser, setAvatarTimestamp }) {
               <Typography color="text.secondary">
                 {displayUser.email}
               </Typography>
-              <Box sx={{ mt: 1 }}>
+              <Box
+                sx={{
+                  mt: 1,
+                  display: "flex",
+                  justifyContent: { xs: "center", sm: "flex-start" },
+                }}
+              >
                 <Chip
                   label={
                     user?.isProfileComplete
@@ -277,14 +307,15 @@ export default function UserInfoCard({ user, setUser, setAvatarTimestamp }) {
               </Box>
             </Box>
           </Box>
-          <Box>
+          <Box sx={{ width: { xs: "100%", sm: "auto" } }}>
             {isEditing ? (
-              <Box sx={{ display: "flex", gap: 1 }}>
+              <Box sx={{ display: "flex", gap: 1, width: "100%" }}>
                 <Button
                   startIcon={<SaveIcon />}
                   variant="contained"
                   onClick={handleSave}
                   size="small"
+                  sx={{ flex: { xs: 1, sm: "initial" } }}
                 >
                   Save
                 </Button>
@@ -294,6 +325,7 @@ export default function UserInfoCard({ user, setUser, setAvatarTimestamp }) {
                   onClick={handleCancel}
                   size="small"
                   color="inherit"
+                  sx={{ flex: { xs: 1, sm: "initial" } }}
                 >
                   Cancel
                 </Button>
@@ -304,6 +336,7 @@ export default function UserInfoCard({ user, setUser, setAvatarTimestamp }) {
                 variant="outlined"
                 onClick={() => setIsEditing(true)}
                 size="small"
+                fullWidth
               >
                 Edit Profile
               </Button>
@@ -426,7 +459,10 @@ export default function UserInfoCard({ user, setUser, setAvatarTimestamp }) {
           </Grid>
 
           <Grid item xs={12}>
-            <Typography variant="body1" sx={{ fontWeight: 600, color: "text.primary", mt: 1 }}>
+            <Typography
+              variant="body1"
+              sx={{ fontWeight: 600, color: "text.primary", mt: 1 }}
+            >
               Address
             </Typography>
           </Grid>

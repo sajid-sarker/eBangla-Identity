@@ -61,7 +61,7 @@ export default function Profile({ user, setUser, setAvatarTimestamp }) {
               ? `rgba(${theme.vars.palette.background.defaultChannel} / 1)`
               : alpha(theme.palette.background.default, 1),
             overflow: "auto",
-            p: 3,
+            p: { xs: 2, md: 3 },
           })}
         >
           {/* Completion Warning Banner */}
@@ -92,7 +92,12 @@ export default function Profile({ user, setUser, setAvatarTimestamp }) {
           >
             <Typography
               variant="h4"
-              sx={{ mb: 1, fontWeight: 700, color: "primary.main" }}
+              sx={{
+                mb: 1,
+                fontWeight: 700,
+                color: "primary.main",
+                fontSize: { xs: "1.75rem", sm: "2.125rem" },
+              }}
             >
               My Profile
             </Typography>

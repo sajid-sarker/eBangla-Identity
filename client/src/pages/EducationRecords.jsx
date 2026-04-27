@@ -104,7 +104,7 @@ const EducationRecords = ({ user }) => {
               ? `rgba(${theme.vars.palette.background.defaultChannel} / 1)`
               : alpha(theme.palette.background.default, 1),
             overflow: "auto",
-            p: 3,
+            p: { xs: 2, md: 3 },
           })}
         >
           <Stack
@@ -118,14 +118,21 @@ const EducationRecords = ({ user }) => {
             <Box
               sx={{
                 display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
                 justifyContent: "space-between",
-                alignItems: "flex-start",
+                alignItems: { xs: "flex-start", sm: "center" },
+                gap: 2,
               }}
             >
               <Box>
                 <Typography
                   variant="h4"
-                  sx={{ fontWeight: 700, color: "primary.main", mb: 1 }}
+                  sx={{
+                    fontWeight: 700,
+                    color: "primary.main",
+                    mb: 1,
+                    fontSize: { xs: "1.75rem", sm: "2.125rem" },
+                  }}
                 >
                   Education History
                 </Typography>
@@ -138,7 +145,12 @@ const EducationRecords = ({ user }) => {
                 variant="contained"
                 startIcon={<AddIcon />}
                 onClick={() => handleOpen(null)}
-                sx={{ borderRadius: 2, px: 3, py: 1 }}
+                sx={{
+                  borderRadius: 2,
+                  px: 3,
+                  py: 1,
+                  width: { xs: "100%", sm: "auto" },
+                }}
               >
                 Add Qualification
               </Button>

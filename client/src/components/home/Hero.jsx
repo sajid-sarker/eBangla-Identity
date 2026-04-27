@@ -4,6 +4,7 @@ import Container from "@mui/material/Container";
 import Link from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import { Link as RouterLink } from "react-router-dom";
 
 export default function Hero() {
   return (
@@ -109,6 +110,8 @@ export default function Hero() {
             <Button
               variant="contained"
               size="large"
+              component={RouterLink}
+              to="/register"
               sx={{
                 minWidth: 160,
                 backgroundColor: "#05339C",

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import axios from "axios";
 import { API_BASE_URL } from "../../config/env";
 
@@ -126,8 +128,17 @@ const AddQualificationModal = ({ open, onClose, onSuccess, editData, citizenId }
     }
   };
 
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
-    <Dialog open={open} onClose={handleInternalClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open={open}
+      onClose={handleInternalClose}
+      maxWidth="sm"
+      fullWidth
+      fullScreen={fullScreen}
+    >
       <form onSubmit={handleSubmit}>
         <DialogTitle sx={{ fontWeight: 700 }}>
           {editData ? "Edit Qualification" : "Add New Qualification"}

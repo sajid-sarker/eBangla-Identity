@@ -136,7 +136,12 @@ const TaxRecords = ({ user }) => {
       <SideMenu user={user} />
       <Box
         component="main"
-        sx={{ flexGrow: 1, p: { xs: 2, md: 4 }, backgroundColor: "#f9fafb" }}
+        sx={{
+          flexGrow: 1,
+          p: { xs: 2, md: 4 },
+          backgroundColor: "#f9fafb",
+          mt: { xs: 8, md: 0 },
+        }}
       >
         <Paper
           elevation={3}

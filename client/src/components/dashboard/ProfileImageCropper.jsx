@@ -1,4 +1,6 @@
 import { useState, useCallback } from "react";
+import { useTheme } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import Cropper from "react-easy-crop";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -65,8 +67,11 @@ export default function ProfileImageCropper({ open, imageSrc, onClose, onCropCom
     }
   };
 
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth fullScreen={fullScreen}>
       <DialogTitle sx={{ fontWeight: 600 }}>Adjust Profile Picture</DialogTitle>
       <DialogContent>
         <Box
